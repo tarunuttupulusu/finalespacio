@@ -128,7 +128,7 @@ const mockCategories = [
       'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1517502884422-41eaaced0168?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?auto=format&fit=crop&w=800&q=80'
     ], 
     filters: ['Minimal', 'Executive', 'Creative', 'Storage'] 
@@ -145,7 +145,7 @@ const mockCategories = [
       'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1531973576160-7125cd663d86?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1517502884422-41eaaced0168?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?auto=format&fit=crop&w=800&q=80'
     ], 
     filters: ['Executive', 'Open Plan', 'Reception', 'Collaborative'] 
@@ -281,7 +281,7 @@ const GALLERY_IMAGE_TAGS = {
   'photo-1497215728101-856f4ea42174': ['Minimal', 'Executive'],
   'photo-1586023492125-27b2c045efd7': ['Creative', 'Storage'],
   'photo-1507679799987-c73779587ccf': ['Executive', 'Minimal'],
-  'photo-1517502884422-41eaaced0168': ['Creative', 'Storage'],
+  'photo-1519389950473-47ba0277781c': ['Creative', 'Storage'],
   'photo-1531538606174-0f90ff5dce83': ['Creative', 'Minimal'],
 
   // Commercial Office
@@ -291,7 +291,7 @@ const GALLERY_IMAGE_TAGS = {
   'photo-1497366811353-6870744d04b2': ['Open Plan', 'Collaborative'],
   'photo-1504384308090-c894fdcc538d': ['Open Plan', 'Reception'],
   'photo-1531973576160-7125cd663d86': ['Executive', 'Open Plan'],
-  'photo-1517502884422-41eaaced0168': ['Collaborative', 'Reception'],
+  'photo-1519389950473-47ba0277781c': ['Collaborative', 'Reception'],
   'photo-1531538606174-0f90ff5dce83': ['Open Plan', 'Collaborative'],
 
   // Pooja Room
