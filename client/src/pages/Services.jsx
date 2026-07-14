@@ -3,15 +3,28 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useInView, useScroll, useTransform } from 'framer-motion';
 import { ArrowUpRight, CheckCircle2, MessageSquare, Compass, Layers, Palette, Settings } from 'lucide-react';
 import SEO from '../components/common/SEO';
+import { Button as MovingBorderButton } from '../components/ui/moving-border';
 
-const Reveal = ({ children, delay = 0, className = '' }) => {
+const Reveal = ({ children, delay = 0, className = '', direction = 'up' }) => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
+  
+  const getInitial = () => {
+    if (direction === 'left') return { opacity: 0, x: -60 };
+    if (direction === 'right') return { opacity: 0, x: 60 };
+    return { opacity: 0, y: 28 };
+  };
+
+  const getAnimate = () => {
+    if (direction === 'left' || direction === 'right') return inView ? { opacity: 1, x: 0 } : {};
+    return inView ? { opacity: 1, y: 0 } : {};
+  };
+
   return (
     <motion.div ref={ref} className={className}
-      initial={{ opacity: 0, y: 28 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}>
+      initial={getInitial()}
+      animate={getAnimate()}
+      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}>
       {children}
     </motion.div>
   );
@@ -189,36 +202,47 @@ const Services = () => {
 
 
       {/* ── SERVICES LIST ── */}
-      <section className="py-24 px-6 md:px-10">
+      <section className="py-24 px-6 md:px-10 overflow-hidden">
         <div className="max-w-[1440px] mx-auto divide-y divide-ink-border">
-          {services.map((s, i) => (
-            <div key={s.num} className="py-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <Reveal delay={0.05} className={i % 2 === 1 ? 'lg:order-2' : ''}>
-                <div className="aspect-[4/3] rounded-card overflow-hidden bg-bg-card">
-                  <img src={s.img} alt={s.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
-                </div>
-              </Reveal>
-              <Reveal delay={0.15} className={`space-y-6 ${i % 2 === 1 ? 'lg:order-1' : ''}`}>
-                <div className="flex items-center gap-4">
-                  <span className="font-sans text-[11px] font-semibold text-gold">{s.num}</span>
-                  <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-ink-muted bg-bg-card px-3 py-1 rounded-pill">{s.tag}</span>
-                </div>
-                <h2 className="font-display text-[clamp(28px,3vw,42px)] font-bold tracking-tight text-ink leading-tight">{s.title}</h2>
-                <p className="font-sans text-[15px] text-ink-soft leading-relaxed">{s.desc}</p>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {s.includes.map((item) => (
-                    <li key={item} className="flex items-center gap-2 font-sans text-[13px] text-ink-soft">
-                      <CheckCircle2 size={14} className="text-gold shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/contact" className="btn-primary w-fit">
-                  Enquire About This <ArrowUpRight size={13} />
-                </Link>
-              </Reveal>
-            </div>
-          ))}
+          {services.map((s, i) => {
+            const isOdd = i % 2 === 1;
+            return (
+              <div key={s.num} className="py-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <Reveal 
+                  delay={0.05} 
+                  direction={isOdd ? 'left' : 'right'}
+                  className={isOdd ? 'lg:order-2' : ''}
+                >
+                  <div className="aspect-[4/3] rounded-card overflow-hidden bg-bg-card">
+                    <img src={s.img} alt={s.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                  </div>
+                </Reveal>
+                <Reveal 
+                  delay={0.15} 
+                  direction={isOdd ? 'right' : 'left'}
+                  className={`space-y-6 ${isOdd ? 'lg:order-1' : ''}`}
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="font-sans text-[11px] font-semibold text-gold">{s.num}</span>
+                    <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-ink-muted bg-bg-card px-3 py-1 rounded-pill">{s.tag}</span>
+                  </div>
+                  <h2 className="font-display text-[clamp(28px,3vw,42px)] font-bold tracking-tight text-ink leading-tight">{s.title}</h2>
+                  <p className="font-sans text-[15px] text-ink-soft leading-relaxed">{s.desc}</p>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {s.includes.map((item) => (
+                      <li key={item} className="flex items-center gap-2 font-sans text-[13px] text-ink-soft">
+                        <CheckCircle2 size={14} className="text-gold shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to="/contact" className="btn-primary w-fit">
+                    Enquire About This <ArrowUpRight size={13} />
+                  </Link>
+                </Reveal>
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -235,24 +259,27 @@ const Services = () => {
               const Icon = getStepIcon(p.step);
               return (
                 <Reveal key={p.step} delay={i * 0.07} className="h-full">
-                  <div className="group relative bg-bg border border-ink-border/50 rounded-card p-8 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(16,16,20,0.04)] transition-all duration-500 flex flex-col justify-between h-full overflow-hidden">
-                    {/* Interactive top gold line */}
-                    <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-gold via-gold-light to-gold transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-                    
+                  <MovingBorderButton
+                    as="div"
+                    borderRadius="24px"
+                    duration={3000 + i * 500}
+                    containerClassName="w-full h-full"
+                    className="group relative bg-bg border border-ink-border/10 rounded-card p-8 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(16,16,20,0.04)] transition-all duration-500 flex flex-col justify-between h-full overflow-hidden text-left items-stretch"
+                  >
                     <div className="space-y-6">
                       {/* Top bar with Icon and Step number */}
                       <div className="flex items-center justify-between">
-                        <div className="w-12 h-12 rounded-pill bg-gold/10 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-bg transition-all duration-500">
+                        <div className="w-12 h-12 rounded-pill bg-black/10 flex items-center justify-center text-black group-hover:bg-black group-hover:text-cream transition-all duration-500">
                           <Icon size={20} className="stroke-[1.5]" />
                         </div>
-                        <span className="font-display text-[44px] font-bold text-ink-muted/15 group-hover:text-gold/25 transition-colors duration-500 select-none">
+                        <span className="font-display text-[44px] font-bold text-ink-muted/15 group-hover:text-black/20 transition-colors duration-500 select-none">
                           {p.step}
                         </span>
                       </div>
 
                       {/* Header and description */}
                       <div className="space-y-3">
-                        <h3 className="font-display text-[19px] font-bold text-ink group-hover:text-gold transition-colors duration-300">
+                        <h3 className="font-display text-[19px] font-bold text-ink group-hover:text-black transition-colors duration-300">
                           {p.name}
                         </h3>
                         <p className="font-sans text-[13.5px] text-ink-soft leading-relaxed">
@@ -260,7 +287,7 @@ const Services = () => {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </MovingBorderButton>
                 </Reveal>
               );
             })}

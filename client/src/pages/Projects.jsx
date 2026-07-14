@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useInView, useScroll, useTransform } from 'fra
 import axios from 'axios';
 import { Search, ArrowUpRight } from 'lucide-react';
 import SEO from '../components/common/SEO';
+import GooeyInput from '../components/ui/gooey-input';
 
 const Reveal = ({ children, delay = 0, className = '' }) => {
   const ref = useRef(null);
@@ -296,16 +297,12 @@ const Projects = () => {
               ))}
             </div>
 
-            <div className="relative max-w-full lg:max-w-[320px] w-full">
-              <input
-                type="text"
-                placeholder="Search projects..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-bg-card border border-ink-border focus:border-gold focus:outline-none rounded-pill font-sans text-xs px-12 py-3 text-ink placeholder:text-ink-muted transition-all duration-200"
-              />
-              <Search size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-ink-muted" />
-            </div>
+            <GooeyInput
+              placeholder="Search projects..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="lg:max-w-[320px]"
+            />
           </div>
 
           {/* Project Grid */}

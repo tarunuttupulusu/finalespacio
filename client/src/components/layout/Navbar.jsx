@@ -11,7 +11,7 @@ const Navbar = () => {
   const location = useLocation();
 
   // Pages that start with a dark cinematic hero
-  const hasDarkHero = ['/', '/about', '/services', '/projects', '/what-we-do', '/products'].some(path => 
+  const hasDarkHero = ['/', '/about', '/services', '/projects', '/what-we-do', '/products', '/contact'].some(path => 
     path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
   );
 
@@ -52,7 +52,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ${
+      <nav className={`fixed top-0 left-0 w-full z-[100] transition-all duration-700 ${
         isNavLight
           ? 'bg-bg/95 backdrop-blur-md shadow-sm px-0 pt-0'
           : 'bg-transparent px-5 pt-7 lg:px-12 lg:pt-[18px]'
@@ -123,7 +123,7 @@ const Navbar = () => {
                 >
                   <Link 
                     to={link.path}
-                    className="block font-display text-3xl font-semibold text-white/85 hover:text-gold py-3 border-b border-white/10 transition-colors"
+                    className="block font-display text-3xl font-semibold text-white hover:text-gold py-3 border-b border-white/10 transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -134,7 +134,7 @@ const Navbar = () => {
             <Link 
               to="/contact" 
               onClick={() => setMobileMenuOpen(false)}
-              className="mt-8 inline-flex items-center justify-center gap-2 bg-gold text-ink font-sans text-[12px] font-bold uppercase tracking-widest px-6 py-4.5 rounded-pill w-full hover:bg-gold-hover transition-colors"
+              className="mt-8 inline-flex items-center justify-center gap-2 bg-white text-ink font-sans text-[12px] font-bold uppercase tracking-widest px-6 py-4.5 rounded-pill w-full hover:bg-white/90 transition-colors"
             >
               Contact us <ArrowUpRight size={13} />
             </Link>
@@ -158,8 +158,8 @@ const Navbar = () => {
 
         {/* Floating Circular Center Logo */}
         <div className="relative z-50 flex justify-center flex-1">
-          <Link to="/" className="w-18 h-18 bg-bg border border-ink-border/50 rounded-full flex items-center justify-center shadow-[0_-4px_12px_rgba(0,0,0,0.12)] -translate-y-6 transition-transform duration-300 hover:scale-105 active:scale-95">
-            <Logo showText={false} scrolled={true} className="scale-90" />
+          <Link to="/" className="w-18 h-18 bg-black border border-white/10 rounded-full flex items-center justify-center shadow-[0_-4px_12px_rgba(0,0,0,0.2)] -translate-y-6 transition-transform duration-300 hover:scale-105 active:scale-95">
+            <Logo showText={false} scrolled={false} className="scale-90" />
           </Link>
         </div>
 

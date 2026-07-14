@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Search, ArrowRight, ChevronRight } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import DomeGallery from '../components/ui/DomeGallery';
+import GooeyInput from '../components/ui/gooey-input';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -119,11 +120,12 @@ const Products = () => {
           <span className="font-sans text-xs uppercase tracking-widest text-gold font-bold">Premium Collection</span>
           <h2 className="font-editorial text-3xl font-bold text-charcoal">Browse Materials</h2>
         </div>
-        <div className="relative w-full max-w-[360px]">
-          <input type="text" placeholder="Search materials..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-offwhite border border-walnut/10 hover:border-walnut/25 focus:border-gold focus:outline-none rounded-input font-sans text-xs px-12 py-3.5 text-charcoal" />
-          <Search size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-walnut" />
-        </div>
+        <GooeyInput
+          placeholder="Search materials..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="max-w-[360px]"
+        />
       </div>
 
       {/* Material Cards Grid */}
