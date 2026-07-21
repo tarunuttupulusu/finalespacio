@@ -10,9 +10,20 @@ const SEO = ({
   url,
   type = 'website',
 }) => {
-  const fullTitle = title ? `${title} — ESPACIO Interiors` : 'ESPACIO Interiors | Premium Interior Design, Hyderabad';
+  const suffix = 'ESPACIO Interiors';
+  const fullTitle = title
+    ? (title.includes(suffix) ? title : `${title} — ${suffix}`)
+    : 'ESPACIO Interiors | Premium Interior Design, Hyderabad';
   const metaDesc = description || "ESPACIO is Hyderabad's premier interior design studio. We deliver full-home interiors, modular kitchens, commercial offices, and material supply with engineering precision.";
   const canonical = url ? `https://www.theespacio.in${url}` : 'https://www.theespacio.in';
+
+  React.useEffect(() => {
+    document.title = fullTitle;
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', metaDesc);
+    }
+  }, [fullTitle, metaDesc]);
 
   return (
     <Helmet>

@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useInView, useScroll, useTransform } from 'framer-motion';
-import { ArrowUpRight, ArrowRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import axios from 'axios';
 import SEO from '../components/common/SEO';
 import Logo from '../components/common/Logo';
 import DecryptedText from '../components/ui/DecryptedText';
 import { StickyScroll } from '../components/ui/sticky-scroll-reveal';
 import { HeroParallax } from '../components/ui/hero-parallax';
-import { ScrollStack, ScrollStackItem } from '../components/ui/scroll-stack';
+import Testimonials from '../components/ui/Testimonials';
 
 const Reveal = ({ children, delay = 0, className = '' }) => {
   const ref = useRef(null);
@@ -23,19 +23,20 @@ const Reveal = ({ children, delay = 0, className = '' }) => {
   );
 };
 
+const AUTO_SCROLL_IMAGES = [
+  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=600&q=80'
+];
+
 const AutoScrollingInteriorBox = () => {
-  const images = [
-    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=600&q=80'
-  ];
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % images.length);
+      setIndex((prev) => (prev + 1) % AUTO_SCROLL_IMAGES.length);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -45,7 +46,7 @@ const AutoScrollingInteriorBox = () => {
       <AnimatePresence initial={false}>
         <motion.img
           key={index}
-          src={images[index]}
+          src={AUTO_SCROLL_IMAGES[index]}
           alt="ESPACIO Luxury Interior Style"
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -91,87 +92,226 @@ const teamProjectsData = [
 
 const TeamProjectsShowcase = () => {
   const [idx, setIdx] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [progress, setProgress] = useState(0);
+  const timerRef = useRef(null);
+  const progressRef = useRef(null);
+  const INTERVAL = 1981;
+
+  const startProgress = () => {
+    setProgress(0);
+    let start = null;
+    const tick = (ts) => {
+      if (!start) start = ts;
+      const pct = Math.min(((ts - start) / INTERVAL) * 100, 100);
+      setProgress(pct);
+      if (pct < 100) progressRef.current = requestAnimationFrame(tick);
+    };
+    if (progressRef.current) cancelAnimationFrame(progressRef.current);
+    progressRef.current = requestAnimationFrame(tick);
+  };
+
+  const resetTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    startProgress();
+    timerRef.current = setInterval(() => {
+      setDirection(1);
+      setIdx((prev) => (prev + 1) % teamProjectsData.length);
+      startProgress();
+    }, INTERVAL);
+  };
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setIdx((prev) => (prev + 1) % teamProjectsData.length);
-    }, 4500);
-    return () => clearInterval(timer);
+    resetTimer();
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (progressRef.current) cancelAnimationFrame(progressRef.current);
+    };
   }, []);
+
+  const handleNext = (e) => {
+    if (e) e.stopPropagation();
+    setDirection(1);
+    setIdx((prev) => (prev + 1) % teamProjectsData.length);
+    resetTimer();
+  };
+
+  const handlePrev = (e) => {
+    if (e) e.stopPropagation();
+    setDirection(-1);
+    setIdx((prev) => (prev - 1 + teamProjectsData.length) % teamProjectsData.length);
+    resetTimer();
+  };
 
   const current = teamProjectsData[idx];
 
+  const slideVariants = {
+    enter: (dir) => ({
+      x: dir > 0 ? '60%' : '-60%',
+      opacity: 0,
+      scale: 1.08,
+      filter: 'blur(6px)',
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      filter: 'blur(0px)',
+    },
+    exit: (dir) => ({
+      x: dir < 0 ? '40%' : '-40%',
+      opacity: 0,
+      scale: 0.96,
+      filter: 'blur(4px)',
+    }),
+  };
+
   return (
-    <div className="relative w-[85%] sm:w-[80%] mx-auto aspect-[4/3.2]">
-      {/* Back Box: Projects Auto-Scroll Background */}
+    <div className="relative w-[85%] sm:w-[80%] mx-auto aspect-[4/3.2] group">
+
+      {/* ── Main Card ── */}
       <div className="w-full h-full rounded-[24px] overflow-hidden shadow-2xl border border-ink-border/10 relative z-10">
-        <AnimatePresence>
+        <AnimatePresence custom={direction} initial={false}>
           <motion.div
             key={`proj-${idx}`}
-            initial={{ opacity: 0, scale: 1.05 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="absolute inset-0"
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              duration: 0.35,
+              ease: [0.25, 0.46, 0.45, 0.94],
+              opacity: { duration: 0.25 },
+              filter: { duration: 0.3 },
+            }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.5}
+            onDragEnd={(e, info) => {
+              if (info.offset.x < -50) handleNext();
+              else if (info.offset.x > 50) handlePrev();
+            }}
+            className="absolute inset-0 cursor-grab active:cursor-grabbing select-none"
           >
-            <img 
-              src={current.projectImg} 
-              alt={current.projectLabel} 
-              className="w-full h-full object-cover" 
+            {/* Ken Burns zoom-pan */}
+            <motion.img
+              src={current.projectImg}
+              alt={current.projectLabel}
+              className="w-full h-full object-cover select-none pointer-events-none"
+              draggable="false"
+              initial={{ scale: 1.12, x: '2%' }}
+              animate={{ scale: 1.0, x: '0%' }}
+              transition={{ duration: INTERVAL / 1000 + 0.5, ease: 'linear' }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-            
-            {/* Label badge */}
-            <div className="absolute bottom-4 right-4 bg-ink/80 backdrop-blur-md text-bg text-[10px] uppercase tracking-wider px-3.5 py-2 rounded-full font-semibold border border-white/10 z-20 shadow-sm flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
-              {current.projectLabel}
-            </div>
+
+            {/* Gradient overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent" />
+
+            {/* Gloss shimmer sweep */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.07) 50%, transparent 65%)',
+                backgroundSize: '200% 100%',
+              }}
+              animate={{ backgroundPosition: ['200% 0', '-200% 0'] }}
+              transition={{ duration: 1.6, ease: 'linear', repeat: Infinity, repeatDelay: 0.4 }}
+            />
+
+            {/* Animated label badge */}
+            <motion.div
+              className="absolute bottom-4 right-4 bg-black/75 backdrop-blur-md !text-white group-hover:text-white text-[11px] uppercase tracking-widest px-4 py-2 rounded-full font-bold border border-white/20 z-20 shadow-md flex items-center gap-1.5 select-none"
+              initial={{ opacity: 0, y: 12, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <motion.span
+                className="w-1.5 h-1.5 rounded-full bg-gold"
+                animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
+                transition={{ duration: 1.2, repeat: Infinity }}
+              />
+              <span className="!text-white group-hover:text-white">{current.projectLabel}</span>
+            </motion.div>
+
+
           </motion.div>
         </AnimatePresence>
-      </div>
 
-      {/* Front Box: Project Lead / Member (Floating Offset - Aligned to Bottom-Left Corner) */}
-      <div className="absolute left-0 bottom-0 w-[38%] aspect-square rounded-bl-[24px] rounded-tr-[24px] rounded-tl-[12px] rounded-br-[12px] overflow-hidden shadow-xl border-t border-r border-ink-border/15 bg-white z-20 hidden sm:block">
-        <AnimatePresence>
+        {/* Progress bar */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-white/10 z-30">
           <motion.div
-            key={`member-${idx}`}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
-            className="absolute inset-0"
-          >
-            <img 
-              src={current.memberImg} 
-              alt={current.name} 
-              className="w-full h-full object-cover" 
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            
-            {/* Lead Info */}
-            <div className="absolute bottom-3 left-3 right-3 text-left">
-              <p className="text-[10px] md:text-[11px] font-semibold text-white leading-tight truncate">{current.name}</p>
-              <p className="text-[8px] md:text-[9px] text-white/70 tracking-wider uppercase font-medium mt-0.5">{current.role}</p>
-            </div>
-
-            <div className="absolute top-3 right-3 bg-gold text-white text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full font-semibold z-30 shadow-sm">
-              Lead
-            </div>
-          </motion.div>
-        </AnimatePresence>
+            className="h-full bg-gold"
+            style={{ width: `${progress}%` }}
+            transition={{ duration: 0 }}
+          />
+        </div>
       </div>
+
+      {/* ── Dot indicators ── */}
+      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+        {teamProjectsData.map((_, i) => (
+          <motion.button
+            key={i}
+            onClick={() => { setDirection(i > idx ? 1 : -1); setIdx(i); resetTimer(); }}
+            className="rounded-full bg-ink/20 transition-all"
+            animate={{ width: i === idx ? 20 : 6, background: i === idx ? '#c5a572' : 'rgba(0,0,0,0.18)' }}
+            style={{ height: 6 }}
+            transition={{ duration: 0.35 }}
+          />
+        ))}
+      </div>
+
+      {/* ── Nav Buttons ── */}
+      <motion.button
+        onClick={handlePrev}
+        whileHover={{ scale: 1.12, backgroundColor: 'white', color: '#101014' }}
+        whileTap={{ scale: 0.95 }}
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full border border-white/10 bg-black/40 backdrop-blur-md text-white flex items-center justify-center transition-colors duration-300 shadow-md opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+        transition={{ duration: 0.2 }}
+        aria-label="Previous Project"
+      >
+        <motion.span
+          className="text-[14px]"
+          animate={{ x: [0, -2, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+        >←</motion.span>
+      </motion.button>
+
+      <motion.button
+        onClick={handleNext}
+        whileHover={{ scale: 1.12, backgroundColor: 'white', color: '#101014' }}
+        whileTap={{ scale: 0.95 }}
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full border border-white/10 bg-black/40 backdrop-blur-md text-white flex items-center justify-center transition-colors duration-300 shadow-md opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+        transition={{ duration: 0.2 }}
+        aria-label="Next Project"
+      >
+        <motion.span
+          className="text-[14px]"
+          animate={{ x: [0, 2, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+        >→</motion.span>
+      </motion.button>
+
     </div>
   );
 };
+
 
 const AnimatedCounter = ({ value, duration = 0.8 }) => {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
   const inView = useInView(ref, { once: false, amount: 0.1 });
 
+  const hasNumbers = /[0-9]/.test(value);
+
   useEffect(() => {
     if (!inView) {
       setCount(0);
+      return;
+    }
+    if (!hasNumbers) {
       return;
     }
 
@@ -204,7 +344,15 @@ const AnimatedCounter = ({ value, duration = 0.8 }) => {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [inView, value, duration]);
+  }, [inView, value, duration, hasNumbers]);
+
+  if (!hasNumbers) {
+    return (
+      <span ref={ref} className="font-display">
+        {value}
+      </span>
+    );
+  }
 
   const suffix = value.replace(/[0-9]/g, '');
 
@@ -219,28 +367,22 @@ const AnimatedCounter = ({ value, duration = 0.8 }) => {
 
 const statsData = [
   {
-    value: "250+",
+    value: "25+",
     label: "Projects Completed",
-    progressWidth: "70%",
-    dots: [true, false, false, false]
+    progressWidth: "60%",
+    dots: [true, false, false]
   },
   {
-    value: "15+",
-    label: "Years Experience",
-    progressWidth: "50%",
-    dots: [false, true, false, false]
+    value: "100+",
+    label: "Happy Clients (including materials clients)",
+    progressWidth: "80%",
+    dots: [false, true, false]
   },
   {
-    value: "180+",
-    label: "Satisfied Clients",
-    progressWidth: "65%",
-    dots: [false, false, true, false]
-  },
-  {
-    value: "32",
-    label: "Design Awards",
-    progressWidth: "55%",
-    dots: [false, false, false, true]
+    value: "40+",
+    label: "Years Combined Legacy",
+    progressWidth: "90%",
+    dots: [false, false, true]
   }
 ];
 
@@ -267,19 +409,21 @@ const faqItemVariants = {
   }
 };
 
+const HERO_IMAGES = [
+  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=90',
+  'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1920&q=90',
+  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1920&q=90',
+  'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1920&q=90'
+];
+
 const Home = () => {
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
   const heroRef = useRef(null);
   const faqSectionRef = useRef(null);
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [showIntro, setShowIntro] = useState(() => !sessionStorage.getItem('espacio_intro_played'));
+  const [hoveredStatIdx, setHoveredStatIdx] = useState(null);
 
-  const { scrollYProgress: faqScrollProgress } = useScroll({
-    target: faqSectionRef,
-    offset: ["start end", "end start"]
-  });
-  const imgY = useTransform(faqScrollProgress, [0, 1], ["-10%", "10%"]);
 
   const handleIntroComplete = () => {
     setShowIntro(false);
@@ -299,51 +443,53 @@ const Home = () => {
 
   const faqData = [
     {
-      q: "How long does a typical project take from start to finish?",
-      a: "Typically, residential projects take about 2 to 3 months, depending on scope, detailing, and level of customization."
+      q: "How long does a project usually take?",
+      a: "Typically 2–3 months, depending on the level of detailing and customization involved in your project."
     },
     {
-      q: "What does your design process look like?",
-      a: "Our process has five key stages: Initial Consultation, Concept & 3D Visualization, Technical Detailing, Turnkey Execution, and Meticulous Handover."
+      q: "Do you provide turnkey interior solutions?",
+      a: "Yes. Every project we take on, residential or commercial is delivered turnkey, with design, materials, execution, and finishing handled entirely by our team."
     },
     {
-      q: "What sets ESPACIO apart from other design firms?",
-      a: "We blend 40+ years of structural construction heritage with modern design. We also source premium materials directly from our own warehouses, cutting down costs and delivery times."
+      q: "What is your consultation process?",
+      a: "We begin with a free consultation to understand your space, requirements, and vision, before moving into detailed design and planning."
     },
     {
-      q: "Do you offer remote design consultations?",
-      a: "Yes! We can coordinate remote layout discussions, design reviews, and 3D walkthroughs for clients who reside outside Hyderabad."
+      q: "Which locations do you currently serve?",
+      a: "We're proudly based in Hyderabad and have delivered residential and commercial projects across the city."
     },
     {
-      q: "What geographic areas do you serve?",
-      a: "Our principal design team and execution crews operate primarily across Hyderabad and surrounding regions."
+      q: "How can customers request a quotation?",
+      a: "Simply fill out our contact form on the website, and our team will get back to you to discuss your project."
     },
     {
-      q: "What types of projects does ESPACIO specialise in?",
-      a: "We specialize in premium apartments, luxury villas, modular kitchens, and high-impact commercial workspace interiors."
+      q: "Do you sell materials separately from design services?",
+      a: "Yes. Our materials including WPC panels, polygranite sheets, acrylic sheets, and more are available for standalone purchase, without needing to book a full design or execution project with us."
     },
     {
-      q: "Do you provide after-sales support and warranties?",
-      a: "Yes! We offer a comprehensive 10-year warranty on modular works along with lifetime post-handover support for structural maintenance."
+      q: "Do I need to be involved throughout the project, or can it be handled remotely?",
+      a: "We keep you informed at every key stage with regular updates and site visits, so you're never left in the dark but you don't need to manage day-to-day execution yourself. That's what turnkey means."
     },
     {
-      q: "Can we visit an ongoing site or showroom?",
-      a: "Absolutely. We encourage site visits to our ongoing projects and experience galleries so you can inspect construction and finishing quality firsthand."
+      q: "What if I already have a design in mind can you just execute it?",
+      a: "Absolutely. Whether you come with a finalized design or need us to design from scratch, we can adapt to execution-only or full design-and-build depending on what you need."
+    },
+    {
+      q: "Can I customize designs, or do you offer fixed packages?",
+      a: "Every project is fully customized around your space and preferences — we don't work off fixed templates or set packages."
+    },
+    {
+      q: "What happens if something needs repair after project completion?",
+      a: "Any issues within our warranty period are addressed directly by our team reach out through the contact form and we'll take care of it."
     }
   ];
 
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
-  const heroImages = [
-    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=90',
-    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1920&q=90',
-    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1920&q=90',
-    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1920&q=90'
-  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentImageIdx((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
+      setCurrentImageIdx((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 2000);
     return () => clearInterval(timer);
   }, []);
 
@@ -352,11 +498,19 @@ const Home = () => {
   const bgScale = useTransform(scrollYProgress, [0, 0.2], [1.05, 0.97]);
   const bgY     = useTransform(scrollYProgress, [0, 0.2], ['0%', '6%']);
 
+  // Hero exit scroll animation (scales down and fades as user scrolls past it)
+  const { scrollYProgress: heroScroll } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+  const heroExitScale = useTransform(heroScroll, [0, 1], [1, 0.85]);
+  const heroExitOpacity = useTransform(heroScroll, [0, 1], [1, 0]);
+  const heroExitY = useTransform(heroScroll, [0, 1], ["0%", "25%"]);
+
   useEffect(() => {
     axios.get('/projects?limit=6&featured=true')
       .then(r => { if (r.data.success) setProjects(r.data.data); })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => {});
   }, []);
 
   const mockProjects = [
@@ -398,19 +552,19 @@ const Home = () => {
     title: p.title,
     description: (
       <div className="space-y-4">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-gold">{p.category}</span>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="font-sans text-[12px] lg:text-[13px] font-bold uppercase tracking-widest text-gold">{p.category}</span>
           <span className="text-ink-soft/40">•</span>
-          <span className="font-sans text-[11px] text-ink-soft">{p.location}</span>
+          <span className="font-sans text-[13px] lg:text-[14px] text-ink-soft font-medium">{p.location}</span>
         </div>
-        <p className="font-sans text-sm text-ink-soft leading-relaxed">
+        <p className="font-sans text-[15px] lg:text-[17px] text-ink-soft leading-relaxed font-normal">
           A luxury {p.category.toLowerCase()} interior design in {p.location}. ESPACIO redefines living spaces through premium material integration and custom modular craftsmanship.
         </p>
         <Link 
           to={`/projects/${p.slug}`}
-          className="inline-flex items-center gap-1.5 font-sans text-xs font-bold uppercase tracking-wider text-gold hover:text-gold/80 transition-colors mt-2"
+          className="inline-flex items-center gap-2 font-sans text-[13px] lg:text-[14px] font-bold uppercase tracking-wider text-gold hover:text-gold/80 transition-colors pt-2"
         >
-          View Case Study <ArrowUpRight size={13} />
+          View Case Study <ArrowUpRight size={15} />
         </Link>
       </div>
     ),
@@ -425,12 +579,6 @@ const Home = () => {
     )
   }));
 
-  const services = [
-    { title: 'Full Home Interior', desc: 'End-to-end design and execution for apartments, villas, and luxury homes.', href: '/services' },
-    { title: 'Modular Kitchens', desc: 'Precision-engineered kitchen systems with premium hardware and finishes.', href: '/what-we-do/modular-kitchen' },
-    { title: 'Commercial Spaces', desc: 'Offices, showrooms, and hospitality spaces designed for impact.', href: '/services' },
-    { title: 'Material Supply', desc: 'Direct-sourced WPC, PVC, acrylic, and stone from our own warehouses.', href: '/products' },
-  ];
 
   const parallaxProducts = [
     {
@@ -461,7 +609,7 @@ const Home = () => {
       title: "Bespoke Dining Hall",
       category: "Residential Space",
       link: "/what-we-do",
-      thumbnail: "https://images.unsplash.com/photo-1502005229762-fc1b2b812ca5?auto=format&fit=crop&w=900&q=80",
+      thumbnail: "https://images.unsplash.com/photo-1615874959474-d609969a20ed?auto=format&fit=crop&w=900&q=80",
     },
     {
       title: "The Lumen Suite",
@@ -485,7 +633,7 @@ const Home = () => {
       title: "Contemporary Bedroom Design",
       category: "Bespoke Bedroom",
       link: "/what-we-do",
-      thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=900&q=80",
+      thumbnail: "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=900&q=80",
     },
     {
       title: "Cozy Open Floor Studio",
@@ -497,13 +645,13 @@ const Home = () => {
       title: "Fluted Panel Accent Hall",
       category: "Residential Space",
       link: "/what-we-do",
-      thumbnail: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=900&q=80",
+      thumbnail: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=900&q=80",
     },
     {
       title: "Luxury Washroom Suite",
       category: "Bespoke Bath",
       link: "/what-we-do",
-      thumbnail: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=900&q=80",
+      thumbnail: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=900&q=80",
     },
     {
       title: "Corporate Reception Lounge",
@@ -515,7 +663,7 @@ const Home = () => {
       title: "Vibrant Lounge Living Room",
       category: "Residential Space",
       link: "/what-we-do",
-      thumbnail: "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=900&q=80",
+      thumbnail: "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=900&q=80",
     },
     {
       title: "Panoramic Penthouse Lounge",
@@ -533,7 +681,7 @@ const Home = () => {
       title: "Marble Dining Area",
       category: "Residential Dining",
       link: "/what-we-do",
-      thumbnail: "https://images.unsplash.com/photo-1617806118233-18e1db207f62?auto=format&fit=crop&w=900&q=80",
+      thumbnail: "https://images.unsplash.com/photo-1617103996702-96ff29b1c467?auto=format&fit=crop&w=900&q=80",
     },
     {
       title: "Master Suite Sanctuary",
@@ -569,13 +717,13 @@ const Home = () => {
       title: "Bespoke Wine Cellar",
       category: "Luxury Home",
       link: "/projects",
-      thumbnail: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=900&q=80",
+      thumbnail: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80",
     },
     {
       title: "Luxury Bathroom Oasis",
       category: "Bespoke Bath",
       link: "/what-we-do",
-      thumbnail: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=900&q=80",
+      thumbnail: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=900&q=80",
     },
   ];
 
@@ -620,10 +768,11 @@ const Home = () => {
       </AnimatePresence>
 
       {/* ── 1. HERO (Rounded Card — matches Services) ── */}
-      <section ref={heroRef} className="relative h-[90vh] lg:h-[95vh] min-h-[640px] lg:min-h-0 px-5 pt-5 pb-[10px] lg:px-12">
+      <section ref={heroRef} className="relative h-[90vh] lg:h-[95vh] min-h-[640px] lg:min-h-0 px-5 pt-5 pb-2 lg:px-12 z-0">
         {/* Rounded card — fills the section */}
-        <div
-          className="relative w-full h-full overflow-hidden will-change-transform rounded-[24px] lg:rounded-[40px]"
+        <motion.div
+          style={{ scale: heroExitScale, opacity: heroExitOpacity, y: heroExitY }}
+          className="relative w-full h-full overflow-hidden will-change-transform rounded-[24px] lg:rounded-[40px] origin-top"
         >
           {/* Background Image Layer */}
           <motion.div 
@@ -636,7 +785,7 @@ const Home = () => {
             <AnimatePresence initial={false}>
               <motion.img
                 key={currentImageIdx}
-                src={heroImages[currentImageIdx]}
+                src={HERO_IMAGES[currentImageIdx]}
                 alt="ESPACIO Luxury Background"
                 initial={{ x: '15%', opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
@@ -650,7 +799,7 @@ const Home = () => {
 
           {/* ─── Foreground Glass Cards (pinned to bottom) ─── */}
           <div className="absolute inset-0 z-10 flex flex-col justify-end pointer-events-none">
-              <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 pb-8 md:pb-14 lg:pb-0 pointer-events-auto">
+              <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 pb-8 md:pb-14 lg:pb-10 pointer-events-auto">
               
               <motion.div 
                 className="flex flex-col lg:flex-row items-end gap-4 lg:gap-6"
@@ -670,14 +819,14 @@ const Home = () => {
 
                 {/* ─── LEFT: Craft Card ─── */}
                 <motion.div
-                  className="w-full lg:max-w-[380px]"
+                  className="w-full max-w-[390px] sm:max-w-[415px] mx-auto lg:mx-0 lg:max-w-[415px]"
                 >
                   <motion.div 
-                    className="relative rounded-[20px] md:rounded-[28px] overflow-hidden border border-white/[0.15] shadow-2xl"
+                    className="relative rounded-[20px] md:rounded-[26px] overflow-hidden border border-white/15 shadow-2xl"
                     style={{ 
-                      background: 'rgba(12, 12, 16, 0.82)',
-                      backdropFilter: 'blur(40px)',
-                      WebkitBackdropFilter: 'blur(40px)',
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      backdropFilter: 'blur(24px)',
+                      WebkitBackdropFilter: 'blur(24px)',
                     }}
                     variants={{
                       hidden: { opacity: 0, y: 35 },
@@ -691,38 +840,51 @@ const Home = () => {
                     {/* Top glass highlight */}
                     <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
                     
-                    <div className="p-5 md:p-7">
-                      {/* Large interior thumbnail (hidden on mobile to save vertical space) */}
-                      <div className="hidden sm:block w-full aspect-[16/9] rounded-[14px] overflow-hidden mb-5">
-                        <img 
-                          src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80" 
-                          alt="Luxury interior showcase"
-                          className="w-full h-full object-cover"
-                        />
+                    <div className="p-4 sm:p-5.5 md:p-6">
+                      {/* Large interior thumbnail - slides in sync with background */}
+                      <div className="w-full aspect-[16/10] sm:aspect-[16/9] rounded-[14px] overflow-hidden mb-5 relative">
+                        <AnimatePresence initial={false}>
+                          <motion.img
+                            key={currentImageIdx}
+                            src={HERO_IMAGES[currentImageIdx]}
+                            alt="Luxury interior showcase"
+                            initial={{ x: '15%', opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            exit={{ x: '-15%', opacity: 0 }}
+                            transition={{ duration: 1.6, ease: [0.25, 1, 0.5, 1] }}
+                            className="absolute inset-0 w-full h-full object-cover"
+                          />
+                        </AnimatePresence>
                       </div>
 
                       {/* Headline */}
-                      <h1 className="font-display text-[32px] sm:text-[44px] lg:text-[36px] font-bold leading-[1.05] tracking-tight text-white mb-5">
-                        We Craft the<br />Future Dwelling
-                      </h1>
+                      <h2 className="font-display text-[28px] sm:text-[36px] lg:text-[32px] font-semibold leading-tight tracking-tight text-white mb-6 text-center">
+                        We Craft the Future Dwelling
+                      </h2>
 
                       {/* Bottom Row */}
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-[52px] h-[34px] md:w-[64px] md:h-[40px] rounded-lg overflow-hidden border border-white/10">
-                            <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=150&q=80" className="w-full h-full object-cover" alt="kitchen" />
-                          </div>
-                          <div className="w-[52px] h-[34px] md:w-[64px] md:h-[40px] rounded-lg overflow-hidden border border-white/10">
-                            <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=150&q=80" className="w-full h-full object-cover" alt="bedroom" />
-                          </div>
-                        </div>
-
+                      <div className="flex items-center justify-center">
                         <Link 
                           to="/projects"
-                          className="inline-flex items-center gap-2 border border-white/25 bg-white/[0.12] hover:bg-white text-white hover:text-ink font-sans text-[11px] md:text-[12px] font-bold px-4 md:px-5 py-3 rounded-pill transition-all duration-300 group shrink-0"
+                          className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-white/30 bg-white/15 backdrop-blur-md px-5 py-2.5 text-[11px] md:text-[12px] font-bold text-white hover:bg-white hover:text-[#101014] shadow-md transition-all duration-300 shrink-0"
                         >
-                          <span>Our Projects</span>
-                          <ArrowUpRight size={13} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                          {/* Sizing span (invisible, sets exact container width for Discover Our Works ↗) */}
+                          <span className="inline-flex items-center gap-1.5 opacity-0 pointer-events-none select-none whitespace-nowrap">
+                            <span>Discover Our Works</span>
+                            <ArrowUpRight size={14} className="shrink-0" />
+                          </span>
+
+                          {/* Default State: Our Projects ↗ */}
+                          <span className="absolute inset-0 flex items-center justify-center gap-1.5 transition-all duration-300 group-hover:-translate-y-full group-hover:opacity-0 text-white whitespace-nowrap">
+                            <span>Our Projects</span>
+                            <ArrowUpRight size={14} className="shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                          </span>
+
+                          {/* Hover State: Discover Our Works ↗ */}
+                          <span className="absolute inset-0 flex items-center justify-center gap-1.5 transition-all duration-300 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 text-[#101014] font-bold whitespace-nowrap">
+                            <span style={{ color: '#101014' }}>Discover Our Works</span>
+                            <ArrowUpRight size={14} className="shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" style={{ color: '#101014', stroke: '#101014', strokeWidth: 2.5 }} />
+                          </span>
                         </Link>
                       </div>
                     </div>
@@ -746,29 +908,89 @@ const Home = () => {
                   >
                   
                   {/* Stats Row */}
-                  <div className="flex flex-row gap-4 md:gap-5 lg:justify-end">
+                  <div className="hidden sm:flex flex-row gap-3 md:gap-4 lg:justify-end items-center h-26 -translate-y-6 lg:-translate-y-10">
                     {[
-                      { val: '15+', label: 'Years Legacy' },
-                      { val: '25+', label: 'Projects' },
-                      { val: '98%', label: 'Satisfaction' },
-                    ].map((s) => (
-                      <div 
-                        key={s.label} 
-                        className="flex flex-col items-center justify-center w-20 h-20 sm:w-24 sm:h-24 md:w-26 md:h-26 rounded-[14px] md:rounded-[20px] border border-white/15 shadow-xl text-center"
-                        style={{
-                          background: 'rgba(255, 255, 255, 0.08)',
-                          backdropFilter: 'blur(16px)',
-                          WebkitBackdropFilter: 'blur(16px)',
-                        }}
-                      >
-                        <p className="font-display text-[22px] sm:text-[26px] md:text-[30px] font-semibold text-white leading-none tracking-tight">
-                          {s.val}
-                        </p>
-                        <p className="font-sans text-[7px] sm:text-[8px] md:text-[9px] text-white/50 uppercase tracking-[0.08em] mt-1 px-1.5 leading-tight">
-                          {s.label}
-                        </p>
-                      </div>
-                    ))}
+                      { val: '40+', desc: 'Years Experience', hoverLabel: '40+ Years Family Legacy' },
+                      { val: '25+', desc: 'Projects Done', hoverLabel: '25+ Projects Completed' },
+                      { val: '100+', desc: 'Happy Clients', hoverLabel: '100+ Happy Clients' },
+                    ].map((s, index) => {
+                      const isHovered = hoveredStatIdx === index;
+                      return (
+                        <motion.div 
+                          key={s.label} 
+                          layout
+                          onMouseEnter={() => setHoveredStatIdx(index)}
+                          onMouseLeave={() => setHoveredStatIdx(null)}
+                          onClick={() => setHoveredStatIdx(isHovered ? null : index)}
+                          variants={{
+                            hidden: { opacity: 0, y: 30, scale: 0.92 },
+                            visible: {
+                              opacity: 1,
+                              y: 0,
+                              scale: 1,
+                              transition: {
+                                type: 'spring',
+                                stiffness: 100,
+                                damping: 15,
+                                delay: index * 0.12
+                              }
+                            }
+                          }}
+                          whileHover={{
+                            scale: 1.02,
+                            borderColor: 'rgba(255, 255, 255, 0.45)',
+                            backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                            boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.35)'
+                          }}
+                          className={`flex items-center rounded-[14px] md:rounded-[20px] border shadow-xl cursor-pointer transition-all duration-500 overflow-hidden ${
+                            isHovered 
+                              ? "flex-row justify-between w-[215px] sm:w-[255px] md:w-[300px] h-14 sm:h-18 md:h-20 px-4 md:px-5.5 border-white/35 bg-white/12" 
+                              : "flex-col justify-center items-center w-[80px] sm:w-[90px] md:w-[100px] h-[70px] sm:h-[80px] md:h-[88px] border-white/15 bg-white/8 text-center px-2"
+                          }`}
+                          style={{
+                            backdropFilter: 'blur(16px)',
+                            WebkitBackdropFilter: 'blur(16px)',
+                          }}
+                        >
+                          {/* Number */}
+                          <motion.p 
+                            layout
+                            className={`font-display font-semibold text-white leading-none tracking-tight transition-all duration-300 ${
+                              isHovered 
+                                ? "text-[20px] sm:text-[24px] md:text-[30px] mr-1.5" 
+                                : "text-[18px] sm:text-[22px] md:text-[26px] mb-1"
+                            }`}
+                          >
+                            {s.val}
+                          </motion.p>
+
+                          {/* Always-visible description below number */}
+                          {!isHovered && (
+                            <p className="font-sans text-[9px] sm:text-[10px] text-white/70 font-medium uppercase tracking-[0.12em] leading-tight text-center">
+                              {s.desc}
+                            </p>
+                          )}
+                          
+                          {/* Hover Label Capsule */}
+                          <div className={isHovered ? "flex-1 flex justify-end" : ""}>
+                            <AnimatePresence mode="wait">
+                              {isHovered && (
+                                <motion.div
+                                  key="hover-label"
+                                  initial={{ opacity: 0, x: 10, scale: 0.9 }}
+                                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                                  exit={{ opacity: 0, x: 10, scale: 0.9 }}
+                                  transition={{ type: 'spring', stiffness: 220, damping: 18 }}
+                                  className="bg-white text-bg-dark rounded-[14px] px-3.5 py-1.5 sm:px-4.5 sm:py-2 text-[10px] sm:text-[12px] md:text-[13px] font-semibold text-center leading-tight shadow-md flex items-center justify-center max-w-[110px] sm:max-w-[130px] md:max-w-[150px]"
+                                >
+                                  {s.hoverLabel}
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
                   </div>
 
                   {/* Description (hidden on mobile and laptop to prevent overflow) */}
@@ -789,22 +1011,16 @@ const Home = () => {
             </motion.div>
           </div>
         </div>
-        </div>
-      </section>
-
+      </motion.div>
+    </section>
 
       {/* ── 2. INTRO TEXT (Concept-to-Handover Luxury Showcase) ── */}
-      <section className="py-12 px-6 md:px-12 max-w-[1440px] mx-auto overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+      <section className="relative z-10 bg-bg w-full">
+        <div className="py-12 px-6 md:px-12 max-w-[1440px] mx-auto overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
           
           {/* Left Column: Text & Story (lg:col-span-6) */}
           <div className="lg:col-span-6 space-y-8 text-left">
-            <Reveal>
-              <div className="inline-flex items-center gap-1.5 bg-ink text-bg px-4 py-1.5 rounded-full text-[11px] font-semibold tracking-wider uppercase shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
-                Who We Are
-              </div>
-            </Reveal>
             
             <Reveal delay={0.1}>
               <h2 className="font-display text-[clamp(34px,4.2vw,56px)] font-medium leading-[1.1] tracking-tight text-ink">
@@ -819,12 +1035,9 @@ const Home = () => {
             </Reveal>
             
             <Reveal delay={0.3}>
-              <Link 
-                to="/about" 
-                className="inline-flex items-center gap-2.5 border border-ink text-ink bg-transparent hover:bg-ink hover:text-bg font-sans text-[13px] font-semibold px-6 py-3.5 rounded-full transition-all duration-300 group shadow-sm"
-              >
-                <span>Our Story</span>
-                <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <Link to="/about" className="btn-sliding-cta-dark">
+                <span className="btn-sliding-cta-dark-text-one">Our Story ↗</span>
+                <span className="btn-sliding-cta-dark-text-two">Read More ↗</span>
               </Link>
             </Reveal>
           </div>
@@ -835,11 +1048,12 @@ const Home = () => {
           </div>
           
         </div>
+        </div>
       </section>
 
       {/* ── 2.5 STATS GRID SECTION ── */}
       <section className="pb-12 px-6 md:px-12 max-w-[1440px] mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
           {statsData.map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -863,12 +1077,14 @@ const Home = () => {
 
               {/* Middle Row: Large Value Left */}
               <div className="flex items-baseline justify-between mt-3 mb-2">
-                <h3 className="font-display text-[44px] md:text-[48px] font-medium text-ink leading-none">
+                <h3 className={`font-display font-medium text-ink leading-none ${
+                  stat.value.length > 5 ? 'text-[24px] md:text-[28px] tracking-tight' : 'text-[44px] md:text-[48px]'
+                }`}>
                   <AnimatedCounter value={stat.value} />
                 </h3>
                 
                 {/* Bottom Right Label */}
-                <p className="font-sans text-[12.5px] font-semibold text-ink-soft text-right leading-snug max-w-[110px] select-none">
+                <p className="font-sans text-[12.5px] font-semibold text-ink-soft text-right leading-snug max-w-[180px] select-none">
                   {stat.label}
                 </p>
               </div>
@@ -890,15 +1106,16 @@ const Home = () => {
 
 
       {/* ── 4. PROJECTS GRID ────────────────────────────────────────────────── */}
-      <section className="py-14 px-6 md:px-12 max-w-[1440px] mx-auto border-t border-ink-border">
+      <section className="py-14 px-4 md:px-8 lg:px-12 max-w-[1720px] mx-auto border-t border-ink-border">
         <div className="flex items-end justify-between mb-6">
           <Reveal>
             <p className="font-sans text-[12px] font-semibold uppercase tracking-[0.2em] text-gold mb-4">Selected Work</p>
             <h2 className="font-display text-[clamp(26px,2.8vw,44px)] font-medium tracking-tight text-ink">Our Projects</h2>
           </Reveal>
           <Reveal delay={0.1}>
-            <Link to="/projects" className="hover-underline font-sans text-[14px] font-semibold text-ink-soft hover:text-ink flex items-center gap-2">
-              All Projects <ArrowUpRight size={14} />
+            <Link to="/projects" className="btn-sliding-cta-dark">
+              <span className="btn-sliding-cta-dark-text-one">All Projects ↗</span>
+              <span className="btn-sliding-cta-dark-text-two">View All ↗</span>
             </Link>
           </Reveal>
         </div>
@@ -914,45 +1131,7 @@ const Home = () => {
         <HeroParallax products={parallaxProducts} />
       </section>
 
-      {/* ── 6. MATERIAL STRIP ───────────────────────────────────────────────── */}
-      <section className="pt-14 pb-0 px-6 md:px-12 max-w-[1440px] mx-auto border-t border-ink-border">
-        <div className="flex items-end justify-between mb-14">
-          <Reveal>
-            <p className="font-sans text-[12px] font-semibold uppercase tracking-[0.2em] text-gold mb-4">Our Materials</p>
-            <h2 className="font-display text-[clamp(34px,3.5vw,56px)] font-medium tracking-tight text-ink">Sourced from the World's Best</h2>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <Link to="/products" className="hover-underline font-sans text-[14px] font-semibold text-ink-soft hover:text-ink flex items-center gap-2">
-              Material Library <ArrowUpRight size={14} />
-            </Link>
-          </Reveal>
-        </div>
 
-        <ScrollStack useWindowScroll={true} itemDistance={40} className="w-full !h-auto !overflow-visible">
-          {[
-            { name: 'WPC Panels', img: '/images/materials/wpc_panels.jpg', desc: 'Premium luxury wood-plastic composite panels with outstanding durability, thermal insulation, and textured aesthetic finishes.' },
-            { name: 'Fluted Panels', img: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80', desc: 'Bespoke accent wall cladding in rich relief patterns and contemporary matte finishes, ideal for lounges and statement partitions.' },
-            { name: 'Acrylic Sheets', img: 'https://images.unsplash.com/photo-1565183997392-2f6f122e5912?auto=format&fit=crop&w=800&q=80', desc: 'NX-GEN high gloss acrylic sheets showing high-fidelity marble grain and metallic dust integration for modern cabinetry.' },
-            { name: 'Mosaic Tiles', img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80', desc: 'Curator-selected metallic, glass, and quartz mosaic layouts creating light-diffused luxury backsplashes.' },
-          ].map((m, i) => (
-            <ScrollStackItem key={m.name} itemClassName="bg-bg border border-ink-border/20 flex flex-col md:flex-row items-center gap-8 shadow-sm">
-              <div className="w-full md:w-1/2 aspect-[4/3] md:aspect-video rounded-card overflow-hidden shadow-sm shrink-0">
-                <img src={m.img} alt={m.name} className="w-full h-full object-cover" />
-              </div>
-              <div className="space-y-4 flex-1 text-left">
-                <div className="flex items-center gap-3 justify-start">
-                  <span className="font-sans text-[11px] font-semibold text-gold uppercase tracking-wider">Material 0{i + 1}</span>
-                </div>
-                <h3 className="font-display text-2xl font-bold text-ink">{m.name}</h3>
-                <p className="font-sans text-[14.5px] text-ink-soft leading-relaxed max-w-[500px]">{m.desc}</p>
-                <Link to="/products" className="btn-primary w-fit mt-4 flex items-center gap-2">
-                  Explore Details <ArrowUpRight size={13} />
-                </Link>
-              </div>
-            </ScrollStackItem>
-          ))}
-        </ScrollStack>
-      </section>
 
 
 
@@ -975,20 +1154,20 @@ const Home = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:sticky lg:top-[120px] flex flex-col items-start pb-10"
+              className="lg:sticky lg:top-[120px] flex flex-col items-center text-center pb-10"
             >
               <div className="inline-flex items-center gap-1.5 bg-ink text-bg px-4 py-1.5 rounded-full text-[11px] font-semibold tracking-wider uppercase mb-8 shadow-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
                 FAQ
               </div>
 
-              <h2 className="font-display text-[clamp(28px,3.5vw,44px)] font-medium leading-[1.12] tracking-tight text-ink mb-5">
+              <h2 className="font-display text-[clamp(28px,3.5vw,44px)] font-medium leading-[1.12] tracking-tight text-ink mb-5 text-center">
                 <DecryptedText text="Got Questions?" animateOn="view" revealDirection="center" />
                 <br />
                 <DecryptedText text="We Have Answers." animateOn="view" revealDirection="center" />
               </h2>
 
-              <p className="font-sans text-[14px] text-ink-soft leading-relaxed mb-2 max-w-[400px]">
+              <p className="font-sans text-[14px] text-ink-soft leading-relaxed mb-2 max-w-[400px] mx-auto text-center">
                 From first consultation to final installation, we know you want to understand exactly what to expect. Here's everything you need to know about working with ESPACIO.
               </p>
 
@@ -998,7 +1177,7 @@ const Home = () => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full max-w-[270px] mt-4"
+                className="w-full max-w-[400px] mt-6"
               >
                 <AutoScrollingInteriorBox />
               </motion.div>
@@ -1067,7 +1246,7 @@ const Home = () => {
                           transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
                         />
                       </svg>
-                      <span className="font-sans text-[15px] md:text-[16px] font-medium text-ink group-hover:text-gold transition-colors duration-300">
+                      <span className="font-sans text-[16px] md:text-[18px] font-medium text-ink group-hover:text-gold transition-colors duration-300">
                         {faq.q}
                       </span>
                     </button>
@@ -1081,12 +1260,13 @@ const Home = () => {
                           transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
                           className="overflow-hidden"
                         >
-                          <p className="pl-8 pr-4 pb-3 pt-2 font-sans text-[13.5px] text-ink-soft leading-relaxed">
+                          <p className="pl-8 pr-4 pb-4 pt-2 font-sans text-[15px] md:text-[16px] text-ink-soft leading-relaxed font-normal">
                             <DecryptedText
                               text={faq.a}
                               animateOn="mount"
                               sequential={true}
-                              speed={18}
+                              speed={8}
+                              maxIterations={5}
                             />
                           </p>
                         </motion.div>
@@ -1100,6 +1280,9 @@ const Home = () => {
           
         </div>
       </motion.section>
+
+      {/* Testimonials Marquee Section */}
+      <Testimonials />
 
     </div>
   );

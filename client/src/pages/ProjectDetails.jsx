@@ -8,7 +8,7 @@ import SEO from '../components/common/SEO';
 const ProjectDetails = () => {
   const { slug } = useParams();
   const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Before/After drag slider state
   const [sliderPos, setSliderPos] = useState(50);
@@ -33,6 +33,7 @@ const ProjectDetails = () => {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchProjectDetails = async () => {
       try {
         const response = await axios.get(`/projects/${slug}`);
@@ -187,34 +188,28 @@ const ProjectDetails = () => {
 
   const p = project || getMockFallback();
 
-  if (loading && !project) {
-    return (
-      <div className="bg-cream min-h-screen flex items-center justify-center">
-        <div className="text-center font-sans text-sm text-walnut animate-pulse">Loading case study details...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-cream min-h-screen pb-24">
       <SEO title={`${p.title} — Luxury Case Study`} description={p.description ? p.description.substring(0, 150) : 'Case study description...'} image={p.heroImage} url={`/projects/${p.slug}`} />
-      {/* Back button */}
-      <div className="max-w-[1440px] mx-auto px-6 md:px-12 pt-28 pb-4">
-        <Link to="/projects" className="inline-flex items-center space-x-2 text-xs font-sans uppercase tracking-widest text-walnut hover:text-gold font-bold transition-colors">
-          <ArrowLeft size={14} />
-          <span>Back to Case Studies</span>
-        </Link>
-      </div>
-
       {/* Hero section */}
-      <section className="relative h-[65vh] w-full bg-black">
+      <section className="relative h-[65vh] w-full bg-black pt-28">
         <img
           src={p.heroImage}
           alt={p.title}
           className="absolute inset-0 w-full h-full object-cover opacity-70"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 to-transparent" />
-        <div className="absolute bottom-12 left-0 w-full">
+        <div className="absolute inset-0 bg-gradient-to-b from-charcoal/70 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 to-transparent pointer-events-none" />
+        
+        {/* Back button */}
+        <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-12 pb-4">
+          <Link to="/projects" className="inline-flex items-center space-x-2 text-xs font-sans uppercase tracking-widest text-cream hover:text-gold font-bold transition-colors drop-shadow-sm">
+            <ArrowLeft size={14} />
+            <span>Back to Case Studies</span>
+          </Link>
+        </div>
+
+        <div className="absolute bottom-12 left-0 w-full z-10">
           <div className="max-w-[1440px] mx-auto px-6 md:px-12 flex flex-col space-y-3">
             <span className="font-sans text-xs uppercase tracking-widest text-gold font-bold">
               {p.style || 'Bespoke execution'}

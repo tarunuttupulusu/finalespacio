@@ -1,40 +1,121 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Search, ArrowRight, ChevronRight } from 'lucide-react';
+import { Search, ArrowRight, ChevronRight, ArrowUpRight } from 'lucide-react';
+import { motion, useInView } from 'framer-motion';
 import SEO from '../components/common/SEO';
 import DomeGallery from '../components/ui/DomeGallery';
 import GooeyInput from '../components/ui/gooey-input';
 
+const Reveal = ({ children, delay = 0, className = '' }) => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+  return (
+    <motion.div ref={ref} className={className}
+      initial={{ opacity: 0, y: 32 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}>
+      {children}
+    </motion.div>
+  );
+};
+
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const mockProducts = [
-    { title: 'Fluted Acrylic Luxe - Irish', slug: 'fluted-acrylic-luxe-irish', category: 'fluted_panels', description: 'Premium NX-GEN 1 Irish fluted acrylic wall panel with rich relief lines and a contemporary matte off-white finish.', heroImage: '/images/materials/irish.png', features: ['Luxe Collection', 'NX-GEN 1', 'Irish Finish'] },
-    { title: 'Fluted Acrylic Luxe - Azzurro', slug: 'fluted-acrylic-luxe-azzurro', category: 'fluted_panels', description: 'Elegant NX-GEN 1 Azzurro fluted accent panel in a beautiful sky-blue finish, perfect for premium master bedrooms and lounges.', heroImage: '/images/materials/azzurro.png', features: ['Luxe Collection', 'NX-GEN 1', 'Azzurro Blue'] },
-    { title: 'Fluted Acrylic Luxe - Giallo', slug: 'fluted-acrylic-luxe-giallo', category: 'fluted_panels', description: 'NX-GEN 1 Giallo fluted panel. Professional workspace accent element with clean textured lines in a medium-gray tone.', heroImage: '/images/materials/giallo.png', features: ['Luxe Collection', 'NX-GEN 1', 'Giallo Gray'] },
-    { title: 'Fluted Acrylic Luxe - Marbo', slug: 'fluted-acrylic-luxe-marbo', category: 'fluted_panels', description: 'NX-GEN 1 Marbo panel. Curator-selected sandy-beige fluted cladding for warm light-diffused luxury dining environments.', heroImage: '/images/materials/marbo.png', features: ['Luxe Collection', 'NX-GEN 1', 'Marbo Sand'] },
-    { title: 'Fluted Acrylic Luxe - Florida', slug: 'fluted-acrylic-luxe-florida', category: 'fluted_panels', description: 'Premium NX-GEN 1 Florida fluted surface displaying high-fidelity white marble texture running with golden veins.', heroImage: '/images/materials/florida.png', features: ['Luxe Collection', 'NX-GEN 1', 'Florida Marble'] },
-    { title: 'Fluted Acrylic Luxe - Menta', slug: 'fluted-acrylic-luxe-menta', category: 'fluted_panels', description: 'NX-GEN 1 Menta fluted wall panel. Restful and organic mint green vertical textures, perfect for calming bedroom designs.', heroImage: '/images/materials/menta.png', features: ['Luxe Collection', 'NX-GEN 1', 'Menta Green'] },
-    { title: 'Fluted Acrylic Luxe - Giallo Dining', slug: 'fluted-acrylic-luxe-giallo-dining', category: 'fluted_panels', description: 'NX-GEN 1 Giallo Dining panel. Modern sand-tinted vertical lines styling luxury family dining partitions and ambient layouts.', heroImage: '/images/materials/giallo_dining.png', features: ['Luxe Collection', 'NX-GEN 1', 'Giallo Sand'] },
-    { title: 'Fluted Acrylic Luxe - Ash', slug: 'fluted-acrylic-luxe-ash', category: 'fluted_panels', description: 'NX-GEN 1 Ash fluted element. Clean industrial slate ash tones, offering a sophisticated background for media consoles and screens.', heroImage: '/images/materials/ash.png', features: ['Luxe Collection', 'NX-GEN 1', 'Ash Blue-Gray'] },
-    { title: 'Fluted Acrylic Luxe - Linia', slug: 'fluted-acrylic-luxe-linia', category: 'fluted_panels', description: 'Luxury NX-GEN 2 Linia panel. Delicate warm marble surface patterns detailed with rich gold veins for premium bathroom vanity accenting.', heroImage: '/images/materials/linia.png', features: ['Luxe Collection', 'NX-GEN 2', 'Linia Gold Marble'] },
-    { title: 'Fluted Acrylic Luxe - Florida Vanity', slug: 'fluted-acrylic-luxe-florida-vanity', category: 'fluted_panels', description: 'NX-GEN 2 Florida Vanity layout. Elegant vertical marble and gold trim detailing designed for high-end boutique powder rooms and dressing spaces.', heroImage: '/images/materials/florida_vanity.png', features: ['Luxe Collection', 'NX-GEN 2', 'Florida Gold Marble'] },
-    { title: 'Fluted Acrylic Luxe - Gracia', slug: 'fluted-acrylic-luxe-gracia', category: 'fluted_panels', description: 'Premium NX-GEN 2 Gracia fluted wall panel. Fine off-white marble relief details with standard interlocking installation.', heroImage: '/images/materials/gracia.png', features: ['Luxe Collection', 'NX-GEN 2', 'Gracia Finish'] },
-    { title: 'Fluted Acrylic Luxe - Irish Gen 2', slug: 'fluted-acrylic-luxe-irish-gen2', category: 'fluted_panels', description: 'NX-GEN 2 Irish fluted panel. Next-generation contemporary off-white finish styling luxury executive workspaces and desks.', heroImage: '/images/materials/irish_gen2.png', features: ['Luxe Collection', 'NX-GEN 2', 'Irish Finish'] },
-    { title: 'Fluted Acrylic Luxe - Blanco', slug: 'fluted-acrylic-luxe-blanco', category: 'fluted_panels', description: 'NX-GEN 2 Blanco panel. Minimalist crisp-white fluted texture, perfect for styling bunk beds and modern children\'s bedrooms.', heroImage: '/images/materials/blanco.png', features: ['Luxe Collection', 'NX-GEN 2', 'Blanco White'] },
-    { title: 'Fluted Acrylic Luxe - Formic', slug: 'fluted-acrylic-luxe-formic', category: 'fluted_panels', description: 'Premium NX-GEN 2 Formic panel. Warm vertical oak-grained relief lines detailing high-ceiling staircases and open spaces.', heroImage: '/images/materials/formic.png', features: ['Luxe Collection', 'NX-GEN 2', 'Formic Oak'] },
-    { title: 'Fluted Acrylic Luxe - Ash Gen 2', slug: 'fluted-acrylic-luxe-ash-gen2', category: 'fluted_panels', description: 'NX-GEN 2 Ash panel. Light gray contemporary fluted textures, providing a premium backdrop for master suite bed elevations.', heroImage: '/images/materials/ash_gen2.png', features: ['Luxe Collection', 'NX-GEN 2', 'Ash Gray'] },
-    { title: 'WPC Wall Panels', slug: 'wpc-wall-panels', category: 'wpc_wall_panels', description: 'Co-extruded composite panels with rich wood grain textures. 100% waterproof, termite-proof, fire-retardant.', heroImage: '/images/materials/irish.png', features: ['Waterproof', 'Fire Retardant', 'Eco E0 Grade'] },
-    { title: 'PVC Ceiling Panels', slug: 'pvc-ceiling-panels', category: 'pvc_ceiling_panels', description: 'Lightweight Class-A fire retardant ceiling elements integrating with smart lighting tracks seamlessly.', heroImage: '/images/materials/azzurro.png', features: ['Lightweight', 'Fire Class-A', 'Easy Install'] },
-    { title: 'Fluted Panels', slug: 'fluted-panels', category: 'fluted_panels', description: 'Sleek architectural relief lines for master bed accent walls, home theatres, and office receptions.', heroImage: '/images/materials/gracia.png', features: ['Acoustic', 'Luxury Finish', 'Custom Widths'] },
-    { title: 'Polygranite Sheets', slug: 'polygranite-sheets', category: 'polygranite_sheets', description: 'High-gloss stone surface overlays offering scratch-proof marble elevations without the weight.', heroImage: '/images/materials/florida.png', features: ['Scratch-Proof', 'Marble Finish', 'Heat Resistant'] },
-    { title: 'Acrylic Sheets', slug: 'acrylic-sheets', category: 'acrylic_sheets', description: 'Ultra-gloss anti-scratch cabinet overlays creating glass-like modern kitchen cabinet fronts.', heroImage: '/images/materials/linia.png', features: ['Anti-Scratch', 'UV Stable', 'Mirror Gloss'] },
-    { title: 'Charcoal Panels', slug: 'charcoal-panels', category: 'charcoal_panels', description: 'Richly textured wall panels infused with active charcoal for unique luxury accent wall applications.', heroImage: '/images/materials/ash.png', features: ['Air Purifying', 'Premium Texture', 'Matte Finish'] },
-    { title: 'Mosaic Tiles', slug: 'mosaic-tiles', category: 'mosaic_tiles', description: 'Curated natural stone and matte metallic mosaic details for premium powder rooms and kitchen backsplashes.', heroImage: '/images/materials/florida_vanity.png', features: ['Natural Stone', 'Non-Slip', 'Handcrafted'] },
-    { title: 'Decorative Louvers', slug: 'decorative-louvers', category: 'louvers', description: 'Bespoke walnut and charcoal vertical dividers engineered for light diffusion and open layout zoning.', heroImage: '/images/materials/formic.png', features: ['Light Diffusing', 'Custom Heights', 'Modular'] },
+    {
+      title: 'Acrylic Luxe Collection',
+      slug: 'acrylic-luxe-collection',
+      category: 'acrylic_luxe',
+      badge: 'Premium Finish',
+      description: 'Ultra-gloss anti-scratch cabinet overlays creating glass-like modern kitchen cabinet fronts.',
+      heroImage: '/images/materials/luminous_grid_8313.jpg',
+      features: ['High-Gloss', 'Anti-Scratch']
+    },
+    {
+      title: 'Digital Korean Poly Granite',
+      slug: 'digital-korean-poly-granite',
+      category: 'poly_granite',
+      badge: 'Marble Textures',
+      description: 'High-gloss stone surface overlays offering scratch-proof marble elevations.',
+      heroImage: '/images/materials/florida.png',
+      features: ['Scratch-Proof', 'Marble Finish']
+    },
+    {
+      title: 'Charcoal Panels Luxe Collection',
+      slug: 'charcoal-panels-luxe',
+      category: 'charcoal_panels',
+      badge: 'Textured Accents',
+      description: 'Richly textured wall panels infused with active charcoal for unique luxury accent walls.',
+      heroImage: '/images/materials/charcoal_luxe_4015.jpg',
+      features: ['Air Purifying', 'Premium Texture']
+    },
+    {
+      title: 'Fluted PVC Luxe Collection',
+      slug: 'fluted-pvc-luxe',
+      category: 'fluted_pvc',
+      badge: 'Architectural Panels',
+      description: 'Premium fluted PVC wall panels with rich relief lines and contemporary finishes.',
+      heroImage: '/images/materials/irish.png',
+      features: ['Waterproof', 'Easy Install']
+    },
+    {
+      title: 'LVT Luxe Flooring',
+      slug: 'lvt-luxe-flooring',
+      category: 'lvt_flooring',
+      badge: 'Luxury Vinyl',
+      description: 'Premium luxury vinyl flooring offering durability with authentic wood and stone textures.',
+      heroImage: '/images/materials/giallo_dining.png',
+      features: ['Durable', 'Water-Resistant']
+    },
+    {
+      title: 'Fluted Acrylic Luxe Collection',
+      slug: 'fluted-acrylic-luxe',
+      category: 'fluted_acrylic',
+      badge: '3D Relief',
+      description: 'Dynamic fluted acrylic panels creating sophisticated shadow play for luxury interiors.',
+      heroImage: '/images/materials/fluted_acrylic_florida.jpg',
+      features: ['3D Relief', 'High-Gloss']
+    },
+    {
+      title: 'PVC Luxe Collection',
+      slug: 'pvc-luxe-collection',
+      category: 'pvc_luxe',
+      badge: 'Versatile Panels',
+      description: 'Lightweight, versatile PVC panels for ceiling and wall applications with rich wood and textured finishes.',
+      heroImage: '/images/materials/pvc_luxe_5003_5004.jpg',
+      features: ['Lightweight', 'Fire Retardant']
+    },
+    {
+      title: 'WPC Luxe Collection',
+      slug: 'wpc-luxe-collection',
+      category: 'wpc_luxe',
+      badge: 'Wood Composite',
+      description: 'Co-extruded composite panels offering absolute water resistance and rich wood grain textures.',
+      heroImage: '/images/materials/wpc_luxe_1701_1606.jpg',
+      features: ['100% Waterproof', 'Termite Proof']
+    },
+    {
+      title: 'Espacio Charcoal Panels Luxe Collection (1)',
+      slug: 'charcoal-panels-luxe-1',
+      category: 'charcoal_panels_1',
+      badge: 'Textured Accents',
+      description: 'Additional selection of richly textured wall panels infused with active charcoal.',
+      heroImage: '/images/materials/charcoal_luxe_1_6015.jpg',
+      features: ['Premium Texture', 'Acoustic Relief']
+    },
+    {
+      title: 'Espacio Master Catalogue',
+      slug: 'espacio-master-catalogue',
+      category: 'master_catalogue',
+      badge: 'Full Collection',
+      description: 'The complete master catalogue showcasing all premium materials, Charcoal Louvers, and WPC Louvers.',
+      heroImage: '/images/materials/master_catalogue_charcoal_louvers.jpg',
+      features: ['All Materials', 'Full Specs']
+    }
   ];
 
   useEffect(() => {
@@ -42,7 +123,11 @@ const Products = () => {
       try {
         const response = await axios.get('/products');
         if (response.data.success && response.data.data.length > 0) {
-          setProducts(response.data.data);
+          const merged = response.data.data.map(bp => {
+            const mock = mockProducts.find(m => m.slug === bp.slug);
+            return mock ? { ...bp, ...mock } : bp;
+          });
+          setProducts(merged);
         } else {
           setProducts(mockProducts);
         }
@@ -87,7 +172,7 @@ const Products = () => {
       <SEO title="Premium Material Library — WPC, Fluted, Acrylic Panels" description="Explore ESPACIO's curated material library. WPC wall panels, fluted panels, polygranite, acrylic sheets, mosaic tiles and more. Request samples and catalogue." url="/products" />
       
       {/* Hero with Dome Gallery — same framed-card pattern as Home & Projects */}
-      <section className="relative h-[80vh] lg:h-[95vh] px-5 pt-5 pb-[10px] lg:px-12">
+      <section className="relative h-[73vh] lg:h-[86vh] px-5 pt-5 pb-[10px] lg:px-12">
         {/* Rounded dark card */}
         <div className="relative w-full h-full overflow-hidden rounded-[24px] lg:rounded-[40px] bg-[#120F17]">
         {/* Dome Gallery Container */}
@@ -166,20 +251,7 @@ const Products = () => {
         )}
       </section>
 
-      {/* Enquiry CTA Banner */}
-      <section className="max-w-[1440px] mx-auto px-6 md:px-12">
-        <div className="relative rounded-card overflow-hidden bg-charcoal py-20 px-12 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="absolute inset-0 opacity-10 bg-cover bg-center" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80')` }} />
-          <div className="relative space-y-3">
-            <h2 className="font-editorial text-3xl font-bold text-white">Need help choosing the right material?</h2>
-            <p className="font-sans text-cream/70 text-sm">Our material experts will guide you to the perfect finish for your project.</p>
-          </div>
-          <Link to="/contact" className="relative shrink-0 inline-flex items-center space-x-2 bg-gold hover:bg-gold-hover text-charcoal font-sans text-xs uppercase tracking-widest font-bold py-4 px-8 rounded-button transition-transform duration-300 hover:scale-105">
-            <span>Book Material Consultation</span>
-            <ArrowRight size={14} />
-          </Link>
-        </div>
-      </section>
+
     </div>
   );
 };

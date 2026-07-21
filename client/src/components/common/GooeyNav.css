@@ -78,7 +78,7 @@
   transition: color 0.25s ease;
 }
 
-/* The clickable label — matches the span role="link" */
+/* The clickable label */
 .gooey-nav-container nav ul li span {
   display: inline-block;
   padding: 0.42rem 1.1rem;

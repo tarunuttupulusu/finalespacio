@@ -27,25 +27,25 @@ export const StickyScroll = ({ content, className }) => {
   const springConfig = { stiffness: 180, damping: 25, bounce: 0 };
 
   const textTranslateY = useSpring(
-    useTransform(scrollYProgress, [0, 1], [0, -(cardLength - 1) * 224]),
+    useTransform(scrollYProgress, [0, 1], [0, -(cardLength - 1) * 300]),
     springConfig
   );
 
   return (
     <>
-      {/* Desktop Sticky Scroll (lg and above) - Window Scroll Driven */}
+      {/* Desktop Sticky Scroll (lg and above) - Full Screen Height */}
       <div
         ref={ref}
-        className={`hidden lg:block relative w-full h-[300vh] ${className || ""}`}
+        className={`hidden lg:block relative w-full h-[350vh] ${className || ""}`}
       >
-        {/* Sticky box locked in viewport */}
-        <div className="sticky top-[120px] w-full h-[26rem] flex justify-between gap-8 rounded-[24px] p-5 md:p-7 bg-bg-card/40 border border-ink-border/30 backdrop-blur-sm items-center">
+        {/* Sticky box locked in viewport occupying full screen height */}
+        <div className="sticky top-[95px] w-full h-[82vh] flex justify-between gap-10 rounded-[32px] p-6 lg:p-10 bg-bg-card/50 border border-ink-border/30 backdrop-blur-md items-center shadow-2xl">
           
           {/* Left: interactive scrolling text column */}
-          <div className="relative w-[38%] shrink-0 h-full overflow-hidden pt-[96px] px-2 md:px-4">
+          <div className="relative w-[36%] shrink-0 h-full overflow-hidden pt-[120px] px-2 lg:px-6">
             {/* Top/Bottom gradient mask overlays for text fade */}
-            <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-bg/95 to-transparent z-10 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-bg/95 to-transparent z-10 pointer-events-none" />
+            <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-bg/95 via-bg/70 to-transparent z-10 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-bg/95 via-bg/70 to-transparent z-10 pointer-events-none" />
 
             <motion.div 
               style={{ y: textTranslateY }}
@@ -54,17 +54,17 @@ export const StickyScroll = ({ content, className }) => {
               {content.map((item, index) => (
                 <motion.div
                   key={item.title + index}
-                  className="h-[224px] flex flex-col justify-center text-left"
+                  className="h-[300px] flex flex-col justify-center text-left"
                   animate={{
                     opacity: activeCard === index ? 1 : 0.15,
                     scale: activeCard === index ? 1 : 0.94,
                   }}
                   transition={{ duration: 0.35, ease: "easeOut" }}
                 >
-                  <h3 className="font-display text-xl md:text-2xl font-medium text-ink leading-snug">
+                  <h3 className="font-display text-[28px] sm:text-[32px] lg:text-[42px] font-bold text-ink leading-[1.1]">
                     {item.title}
                   </h3>
-                  <div className="mt-4 font-sans text-sm text-ink-soft leading-relaxed">
+                  <div className="mt-4 font-sans text-base lg:text-lg text-ink-soft leading-relaxed">
                     {item.description}
                   </div>
                 </motion.div>
@@ -72,8 +72,8 @@ export const StickyScroll = ({ content, className }) => {
             </motion.div>
           </div>
 
-          {/* Right: animated image panel */}
-          <div className="w-[55%] shrink-0 h-[22rem] rounded-[18px] bg-bg-card overflow-hidden border border-ink-border/40 shadow-xl relative">
+          {/* Right: full screen height animated image panel */}
+          <div className="w-[60%] shrink-0 h-full rounded-[24px] bg-bg-card overflow-hidden border border-ink-border/40 shadow-2xl relative">
             <AnimatePresence mode="sync">
               <motion.div
                 key={activeCard}
@@ -105,7 +105,7 @@ export const StickyScroll = ({ content, className }) => {
               </div>
               {/* Description */}
               <div className="px-2 text-left">
-                <h3 className="font-display text-xl font-semibold text-ink mb-3">{item.title}</h3>
+                <h3 className="font-display text-2xl font-bold text-ink mb-3">{item.title}</h3>
                 {item.description}
               </div>
             </ScrollStackItem>

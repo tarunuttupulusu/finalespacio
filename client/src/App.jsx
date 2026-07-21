@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { HelmetProvider } from 'react-helmet-async';
+import { AnimatePresence, motion } from 'framer-motion';
 import Lenis from 'lenis';
 
 // Layout Components
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import CustomCursor from './components/common/CustomCursor';
+import QuoteModal from './components/common/QuoteModal';
 
 // Public Pages
 import Home from './pages/Home';
@@ -33,19 +35,32 @@ import { AdminTestimonials, AdminFAQs, AdminSettings, AdminMedia } from './pages
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    // Use a small timeout to allow React to render the new page
+    // and for Lenis to stop its current scroll inertia
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 10);
+    return () => clearTimeout(timer);
   }, [pathname]);
   return null;
 };
 
-// Shared Layout Wrapper
-const MainLayout = ({ children }) => (
-  <div className="flex flex-col min-h-screen">
-    <Navbar />
-    <main className="flex-grow">{children}</main>
-    <Footer />
-  </div>
-);
+// Shared Layout Wrapper with Page Transitions
+const MainLayout = () => {
+  const location = useLocation();
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-grow">
+        <Outlet />
+      </main>
+      <Footer />
+      <QuoteModal />
+    </div>
+  );
+};
 
 function App() {
   useEffect(() => {
@@ -80,18 +95,23 @@ function App() {
           <ScrollToTop />
           <CustomCursor />
           <Routes>
-            {/* ── Public Routes ─────────────────────────────────────── */}
-            <Route path="/" element={<MainLayout><Home /></MainLayout>} />
-            <Route path="/about" element={<MainLayout><About /></MainLayout>} />
-            <Route path="/services" element={<MainLayout><Services /></MainLayout>} />
-            <Route path="/projects" element={<MainLayout><Projects /></MainLayout>} />
-            <Route path="/projects/:slug" element={<MainLayout><ProjectDetails /></MainLayout>} />
-            <Route path="/what-we-do" element={<MainLayout><WhatWeDo /></MainLayout>} />
-            <Route path="/what-we-do/:slug" element={<MainLayout><WhatWeDo /></MainLayout>} />
-            <Route path="/products" element={<MainLayout><Products /></MainLayout>} />
-            <Route path="/products/:slug" element={<MainLayout><ProductDetails /></MainLayout>} />
-            <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
-            <Route path="/faq" element={<MainLayout><FAQ /></MainLayout>} />
+            {/* ── Public Routes (Animated) ────────────────────────── */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/:slug" element={<ProjectDetails />} />
+              <Route path="/what-we-do" element={<WhatWeDo />} />
+              <Route path="/what-we-do/:slug" element={<WhatWeDo />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/products/:slug" element={<ProductDetails />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/faq" element={<FAQ />} />
+              
+              {/* 404 fallback */}
+              <Route path="*" element={<NotFound />} />
+            </Route>
 
             {/* ── Admin Routes (No Navbar/Footer) ───────────────────── */}
             <Route path="/admin" element={<AdminLogin />} />
@@ -103,9 +123,6 @@ function App() {
             <Route path="/admin/gallery" element={<AdminLayout><AdminMedia /></AdminLayout>} />
             <Route path="/admin/faqs" element={<AdminLayout><AdminFAQs /></AdminLayout>} />
             <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
-
-            {/* 404 fallback */}
-            <Route path="*" element={<MainLayout><NotFound /></MainLayout>} />
           </Routes>
         </Router>
       </AuthProvider>

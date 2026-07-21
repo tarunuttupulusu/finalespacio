@@ -31,7 +31,7 @@ const Projects = () => {
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [activeFilter, setActiveFilter]       = useState('all');
   const [searchQuery, setSearchQuery]         = useState('');
-  const [loading, setLoading]                 = useState(true);
+  const [loading, setLoading]                 = useState(false);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const heroRef = useRef(null);
 
@@ -317,16 +317,15 @@ const Projects = () => {
               <p className="font-sans text-sm text-ink-soft">No projects found matching your filters.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProjects.map((project, idx) => {
-                const isLarge = idx % 4 === 0;
                 return (
                   <Reveal key={idx} delay={(idx % 3) * 0.08}>
                     <Link
                       to={`/projects/${project.slug}`}
                       className="group block rounded-card overflow-hidden bg-bg-card card-lift"
                     >
-                      <div className={`relative overflow-hidden ${isLarge ? 'aspect-[4/5]' : 'aspect-[4/3]'}`}>
+                      <div className="relative overflow-hidden aspect-[4/3]">
                         <img
                           src={project.heroImage}
                           alt={project.title}
@@ -340,7 +339,7 @@ const Projects = () => {
                           </span>
                           <span className="font-sans text-[11px] text-ink-muted">{project.year}</span>
                         </div>
-                        <h3 className="font-display text-[18px] font-bold text-ink group-hover:text-ink-soft transition-colors mb-2">
+                        <h3 className="font-display text-[22px] font-bold text-ink group-hover:text-ink-soft transition-colors mb-2 leading-snug">
                           {project.title}
                         </h3>
                         <p className="font-sans text-[13px] text-ink-soft">{project.location}</p>

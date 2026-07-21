@@ -11,9 +11,9 @@ const Navbar = () => {
   const location = useLocation();
 
   // Pages that start with a dark cinematic hero
-  const hasDarkHero = ['/', '/about', '/services', '/projects', '/what-we-do', '/products', '/contact'].some(path => 
+  const hasDarkHero = ['/', '/about', '/services', '/projects', '/what-we-do', '/products'].some(path => 
     path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
-  );
+  ) && !location.search.includes('success=true');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,22 +48,29 @@ const Navbar = () => {
 
 
   // isNavLight = true means white bg + dark text (post-hero or non-hero pages)
-  const isNavLight = scrolled || !hasDarkHero;
+  const isNavLight = scrolled || !hasDarkHero || location.search.includes('success=true');
+  const isBgTransparent = !isNavLight || location.search.includes('success=true');
+  const isContact = location.pathname.startsWith('/contact');
+  const navPosition = isContact ? 'absolute' : 'fixed';
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 w-full z-[100] transition-all duration-700 ${
-        isNavLight
-          ? 'bg-bg/95 backdrop-blur-md shadow-sm px-0 pt-0'
-          : 'bg-transparent px-5 pt-7 lg:px-12 lg:pt-[18px]'
+      <nav className={`${navPosition} top-0 left-0 w-full z-[100] transition-all duration-700 ${
+        isBgTransparent
+          ? 'bg-transparent px-5 pt-7 lg:px-12 lg:pt-[18px]'
+          : 'bg-bg/95 backdrop-blur-md shadow-sm px-0 pt-0'
       }`}
       >
         <div className={`max-w-[1440px] mx-auto pl-6 pr-10 flex items-center justify-between transition-all duration-700 ${
-          isNavLight ? 'py-5' : 'pt-[26px] pb-[12px]'
+          isBgTransparent ? 'pt-[26px] pb-[12px]' : 'py-5'
         }`}>
 
           {/* Logo */}
-          <Link to="/" className={`hover:opacity-90 transition-opacity ${isNavLight ? '' : 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.55)]'}`}>
+          <Link 
+            to="/" 
+            className={`hover:opacity-90 transition-opacity ${isNavLight ? '' : 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.55)]'}`}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
             <Logo scrolled={isNavLight} />
           </Link>
 
@@ -156,12 +163,50 @@ const Navbar = () => {
           <span className="font-sans text-[10px] uppercase tracking-wider font-bold text-ink-soft">Projects</span>
         </Link>
 
-        {/* Floating Circular Center Logo */}
-        <div className="relative z-50 flex justify-center flex-1">
-          <Link to="/" className="w-18 h-18 bg-black border border-white/10 rounded-full flex items-center justify-center shadow-[0_-4px_12px_rgba(0,0,0,0.2)] -translate-y-6 transition-transform duration-300 hover:scale-105 active:scale-95">
-            <Logo showText={false} scrolled={false} className="scale-90" />
-          </Link>
-        </div>
+        {/* Tab: Home */}
+        <Link 
+          to="/" 
+          className="flex flex-col items-center justify-end relative h-full flex-1 pb-2 text-ink-soft hover:text-ink transition-colors group"
+        >
+          {/* House Shape Wrapper Container */}
+          <div className="w-[60px] h-[60px] absolute -top-4 left-1/2 -translate-x-1/2 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 flex items-center justify-center">
+            {/* House Silhouette SVG Background */}
+            <svg 
+              width="60" 
+              height="60" 
+              viewBox="0 0 64 64" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              className="absolute inset-0 w-full h-full drop-shadow-[0_-3px_10px_rgba(0,0,0,0.22)]"
+            >
+              <path
+                d="M 30.1 7.2
+                   C 31.2 6.1, 32.8 6.1, 33.9 7.2
+                   L 57.2 28.5
+                   C 58.4 29.6, 57.9 31, 56.3 31
+                   H 51
+                   V 56
+                   C 51 58.2, 49.2 60, 47 60
+                   H 17
+                   C 14.8 60, 13 58.2, 13 56
+                   V 31
+                   H 7.7
+                   C 6.1 31, 5.6 29.6, 6.8 28.5
+                   Z"
+                fill="#000000"
+                stroke="rgba(255,255,255,0.12)"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
+              />
+            </svg>
+
+            {/* Logo Emblem centered inside the house body */}
+            <div className="relative z-10 scale-[0.55] translate-y-2">
+              <Logo showText={false} scrolled={false} />
+            </div>
+          </div>
+          <span className="font-sans text-[10px] uppercase tracking-wider font-bold text-ink-soft group-hover:text-ink transition-colors">Home</span>
+        </Link>
 
         {/* Tab: Materials */}
         <Link to="/products" className="flex flex-col items-center gap-1 text-ink-soft hover:text-ink transition-colors flex-1 py-2">

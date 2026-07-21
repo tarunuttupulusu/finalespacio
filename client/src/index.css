@@ -1,13 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Cormorant+Garamond:wght@600&family=Marcellus&family=Manrope:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Marcellus&family=Manrope:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 @import "tailwindcss";
 
 /* ── Resentii-Inspired ESPACIO Design System ────────────────────────────────── */
 @theme {
   /* Backgrounds */
-  --color-bg:            #fafafa;
+  --color-bg:            #F8F5F0;
   --color-bg-dark:       #101014;
-  --color-bg-card:       #f4f4f6;
+  --color-bg-card:       #F0EDE7;
   --color-bg-deep:       #28282c;
   --color-bg-section:    #101014;
 
@@ -24,26 +24,26 @@
   --color-gold-hover:    #B8924A;
 
   /* Legacy aliases */
-  --color-cream:         #fafafa;
-  --color-cream-light:   #f4f4f6;
-  --color-offwhite:      #f4f4f6;
+  --color-cream:         #F8F5F0;
+  --color-cream-light:   #F0EDE7;
+  --color-offwhite:      #F0EDE7;
   --color-walnut:        #3d3d47;
   --color-walnut-dark:   #101014;
   --color-charcoal:      #101014;
   --color-charcoal-dark: #28282c;
 
   /* Typography */
-  --font-logo:      'Cinzel', serif;
+  --font-logo:      'Montserrat', sans-serif;
   --font-hero:      'Cormorant Garamond', serif;
-  --font-nav:       'Manrope', sans-serif;
-  --font-body:      'Inter', sans-serif;
-  --font-btn:       'Manrope', sans-serif;
-  --font-title:     'Marcellus', serif;
+  --font-nav:       'Montserrat', sans-serif;
+  --font-body:      'Montserrat', sans-serif;
+  --font-btn:       'Montserrat', sans-serif;
+  --font-title:     'Cormorant Garamond', serif;
 
-  /* Custom utility aliases mapping to requested values */
+  /* Custom utility aliases */
   --font-editorial: 'Cormorant Garamond', serif;
-  --font-sans:      'Inter', sans-serif;
-  --font-display:   'Marcellus', serif;
+  --font-sans:      'Montserrat', sans-serif;
+  --font-display:   'Cormorant Garamond', serif;
 
   /* Border Radius */
   --radius-card:   16px;
@@ -59,20 +59,21 @@
 
   body {
     @apply bg-bg text-ink font-sans antialiased overflow-x-hidden pb-20 lg:pb-0;
+    font-family: 'Montserrat', sans-serif;
     font-feature-settings: "cv09" on, "cv03" on, "cv04" on, "cv11" on;
-    font-size: 14px;
+    font-size: 14.5px;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     font-weight: 500;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.01em;
     line-height: 1.15;
     color: #101014;
   }
 
   p {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 14.5px;
     font-weight: 400;
     line-height: 1.65;
@@ -315,6 +316,65 @@
 }
 
 .btn-sliding-cta:hover .btn-sliding-cta-text-two {
+  top: 50%;
+}
+
+/* ── sliding-rolling cta button (dark version for light backgrounds) ── */
+.btn-sliding-cta-dark {
+  display: inline-block;
+  width: 160px;
+  height: 48px;
+  background: transparent;
+  color: #101014 !important;
+  border-radius: 50px;
+  border: 1px solid rgba(16, 16, 20, 0.15);
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.45s ease, border-color 0.45s ease, color 0.45s ease, box-shadow 0.45s ease;
+}
+
+.btn-sliding-cta-dark span {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
+}
+
+.btn-sliding-cta-dark-text-one {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.btn-sliding-cta-dark-text-two {
+  position: absolute;
+  width: 100%;
+  top: 150%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.btn-sliding-cta-dark:hover {
+  background-color: #101014;
+  border-color: #101014;
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(16, 16, 20, 0.1);
+}
+
+.btn-sliding-cta-dark:hover .btn-sliding-cta-dark-text-one {
+  top: -100%;
+}
+
+.btn-sliding-cta-dark:hover .btn-sliding-cta-dark-text-two {
   top: 50%;
 }
 

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import '../common/GooeyNav.css';
 
 const GooeyNav = ({
@@ -102,30 +102,30 @@ const GooeyNav = ({
   };
 
   const handleClick = (e, index, path) => {
-    e.preventDefault(); // prevent default <a> — we navigate programmatically
     const liEl = navRef.current?.querySelectorAll('li')[index];
-    if (!liEl) return;
+    if (liEl) {
+      updateEffectPosition(liEl);
 
-    updateEffectPosition(liEl);
+      if (filterRef.current) {
+        filterRef.current.querySelectorAll('.particle').forEach(p => {
+          try { filterRef.current.removeChild(p); } catch {}
+        });
+      }
 
-    if (filterRef.current) {
-      filterRef.current.querySelectorAll('.particle').forEach(p => {
-        try { filterRef.current.removeChild(p); } catch {}
-      });
+      if (textRef.current) {
+        textRef.current.classList.remove('active');
+        void textRef.current.offsetWidth;
+        textRef.current.classList.add('active');
+      }
+
+      if (filterRef.current) {
+        makeParticles(filterRef.current);
+      }
     }
 
-    if (textRef.current) {
-      textRef.current.classList.remove('active');
-      void textRef.current.offsetWidth;
-      textRef.current.classList.add('active');
-    }
-
-    if (filterRef.current) {
-      makeParticles(filterRef.current);
-    }
-
-    // Navigate after a short delay so the particle animation starts first
-    setTimeout(() => navigate(path), 50);
+    // Immediately trigger navigation and scroll to top cleanly
+    navigate(path);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleKeyDown = (e, index, path) => {
@@ -160,12 +160,11 @@ const GooeyNav = ({
         <ul ref={navRef}>
           {items.map((item, index) => (
             <li
-              key={index}
+              key={item.name}
               className={activeIndex === index ? 'active' : ''}
               onClick={e => handleClick(e, index, item.path)}
               onKeyDown={e => handleKeyDown(e, index, item.path)}
             >
-              {/* Plain span instead of <Link> — navigation is handled programmatically */}
               <span role="link" tabIndex={0} style={{ cursor: 'pointer' }}>
                 {item.name}
               </span>

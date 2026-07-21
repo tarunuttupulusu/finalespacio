@@ -32,12 +32,23 @@ const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isAuthenticated = useAdminAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/admin');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('espacio_token');
     delete axios.defaults.headers.common['Authorization'];
     navigate('/admin');
   };
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-[#0E0F11] flex">

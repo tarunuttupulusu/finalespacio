@@ -1,13 +1,29 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { SocialLightButton } from '../ui/SocialLightButton';
 
 const Footer = () => {
   const year = new Date().getFullYear();
   const espRef = useRef(null);
   const inView = useInView(espRef, { once: false, margin: '-60px' });
+
+  // Scroll animations for the CTA banner
+  const ctaRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ctaRef,
+    offset: ["start 95%", "center center"]
+  });
+
+  const clipPath = useTransform(
+    scrollYProgress, 
+    [0, 1], 
+    ["inset(15% 10% 15% 10% round 40px)", "inset(0% 0% 0% 0% round 0px)"]
+  );
+  
+  const contentY = useTransform(scrollYProgress, [0, 1], [50, 0]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0, 0, 1]);
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -29,16 +45,26 @@ const Footer = () => {
   return (
     <footer className="bg-bg-dark text-bg pb-10">
       {/* 1. Center CTA Banner with Dusk Architectural Background */}
-      <div 
-        className="relative py-28 px-6 md:px-12 text-center mb-16 overflow-hidden bg-cover bg-center"
-        style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(16, 16, 20, 0.82), rgba(16, 16, 20, 0.95)), url('https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1920&q=80')`
-        }}
+      <motion.div 
+        ref={ctaRef}
+        style={{ clipPath }}
+        className="relative pt-24 pb-32 px-6 md:px-12 text-center mb-16 overflow-hidden bg-cover bg-center"
       >
-        {/* Top/bottom soft fades */}
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-dark via-transparent to-bg-dark pointer-events-none" />
+        {/* Background Image Layer (absolute to allow clipping without affecting layout) */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center"
+          style={{
+            backgroundImage: `linear-gradient(to bottom, rgba(16, 16, 20, 0.75), rgba(16, 16, 20, 0.88)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1920&q=80')`
+          }}
+        />
 
-        <div className="relative z-10 max-w-[1440px] mx-auto">
+        {/* Top/bottom soft fades */}
+        <div className="absolute inset-0 bg-gradient-to-b from-bg-dark via-transparent to-bg-dark pointer-events-none z-0" />
+
+        <motion.div 
+          className="relative z-10 max-w-[1440px] mx-auto flex flex-col items-center justify-center"
+          style={{ y: contentY, opacity: contentOpacity }}
+        >
           <h2 className="font-display text-[clamp(32px,5vw,60px)] font-medium leading-[1.1] tracking-tight text-bg mb-6">
             Ready to Transform<br />Your Space?
           </h2>
@@ -49,11 +75,11 @@ const Footer = () => {
             to="/contact"
             className="btn-sliding-cta"
           >
-            <span className="btn-sliding-cta-text-one">Let's talk</span>
-            <span className="btn-sliding-cta-text-two">Great! ↗</span>
+            <span className="btn-sliding-cta-text-one">LET'S TALK ↗</span>
+            <span className="btn-sliding-cta-text-two">LET'S TALK ↗</span>
           </Link>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Thin Divider line */}
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 border-t border-white/10 mb-12" />
@@ -77,9 +103,9 @@ const Footer = () => {
             >
               Aziznagar, Moinabad Road, Hyderabad, Telangana 500075
             </a>
-            <a href="tel:+919000000000" className="font-sans text-[15px] text-bg/60 hover:text-bg transition-colors block mt-1">
-              +91 90000 00000
-            </a>
+            <Link to="/contact" className="font-sans text-[15px] text-bg/60 hover:text-bg transition-colors block mt-1 hover:underline decoration-white/20 underline-offset-4">
+              Contact Us
+            </Link>
           </div>
 
 
@@ -184,23 +210,108 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* 4. Massive Animated ESPACIO Typography */}
+      {/* 4. Massive Animated ESPACIO Typography (ESP comes from Left, ACIO comes from Right) */}
       <div ref={espRef} className="w-full select-none overflow-hidden flex items-center justify-center mt-6 mb-2">
-        {/* ESP - slides in from left */}
-        <motion.span
-          className="font-display text-[clamp(85px,21vw,300px)] font-bold tracking-tighter text-white leading-none uppercase"
-          initial={{ x: '-80%', opacity: 0 }}
-          animate={inView ? { x: 0, opacity: 1 } : { x: '-80%', opacity: 0 }}
-          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+        {/* ESP Group - slides in dynamically from LEFT */}
+        <motion.div
+          className="flex items-center justify-center gap-0 sm:gap-1"
+          initial={{ x: '-85%', opacity: 0, scale: 0.95 }}
+          animate={inView ? { x: 0, opacity: 1, scale: 1 } : { x: '-85%', opacity: 0, scale: 0.95 }}
+          transition={{ duration: 2.0, ease: [0.16, 1, 0.3, 1] }}
         >
-          ESP
-        </motion.span>
-        {/* ACIO - slides in from right */}
+          {/* Logo Icon Emblem replacing 'E' with dynamic lighting */}
+          <div className="h-[clamp(62px,15.2vw,218px)] w-auto shrink-0 flex items-center justify-center -mt-1 group cursor-pointer">
+            <svg className="h-full w-auto" viewBox="28 26 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="footerGlowGrad" cx="42%" cy="45%" r="40%">
+                  <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.95" />
+                  <stop offset="60%" stopColor="#f59e0b" stopOpacity="0.6" />
+                  <stop offset="100%" stopColor="#d97706" stopOpacity="0" />
+                </radialGradient>
+                <linearGradient id="lightBeamGrad" x1="44.5" y1="56" x2="44.5" y2="95" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.35" />
+                  <stop offset="100%" stopColor="#fbbf24" stopOpacity="0" />
+                </linearGradient>
+                {/* Clip Path to prevent any light from appearing above the lamp shade rim (y=54) */}
+                <clipPath id="belowLampClip">
+                  <rect x="0" y="54" width="120" height="66" />
+                </clipPath>
+              </defs>
+              
+              {/* Architectural Frame */}
+              <motion.path
+                d="M32 55 V95 H95 V30 H50"
+                stroke="#ffffff" strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round"
+                initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : { pathLength: 0 }}
+                transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
+              />
+              {/* T-bar */}
+              <motion.path
+                d="M32 30 H57"
+                stroke="#ffffff" strokeWidth="5.5" strokeLinecap="round"
+                initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : { pathLength: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+              />
+              {/* Lamp Fixture — Fixed (No longer rotates) */}
+              <g
+                style={{ transformOrigin: '44.5px 30px' }}
+              >
+                {/* Flickering Light Layers (strictly clipped BELOW the lamp shade base rim) */}
+                <motion.g
+                  clipPath="url(#belowLampClip)"
+                  initial={{ opacity: 0 }}
+                  animate={inView ? { opacity: [1, 0, 1, 0, 1, 0.08, 1, 0, 1] } : { opacity: 0 }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: "linear" }}
+                >
+                  {/* Downward Light Beam Cone */}
+                  <polygon points="39,56 50,56 92,95 18,95" fill="url(#lightBeamGrad)" />
+                  
+                  {/* Outer Bulb Glow Halo */}
+                  <circle cx="44.5" cy="56" r="22" fill="url(#footerGlowGrad)" />
+                  
+                  {/* Bright Inner Bulb Dot */}
+                  <circle cx="44.5" cy="56" r="4.5" fill="#ffffff" />
+                  
+                  {/* Lamp Filament Line */}
+                  <line x1="39" y1="56" x2="50" y2="56" stroke="#fbbf24" strokeWidth="4" strokeLinecap="round" />
+                </motion.g>
+
+                {/* Lamp Fixture Body */}
+                <path d="M44.5 30 V44" stroke="#ffffff" strokeWidth="4.5" strokeLinecap="round" />
+                <polygon points="44.5,44 36,54 53,54" fill="#ffffff" />
+              </g>
+
+              {/* E Glyph */}
+              <g stroke="#ffffff" strokeWidth="5.5" strokeLinecap="round">
+                <line x1="70" y1="54" x2="70" y2="86" />
+                <line x1="70" y1="54" x2="88" y2="54" />
+                <line x1="70" y1="70" x2="85" y2="70" />
+                <line x1="70" y1="86" x2="88" y2="86" />
+              </g>
+            </svg>
+          </div>
+
+          {/* SP text — Static White */}
+          <span
+            className="font-display text-[clamp(85px,21vw,300px)] font-bold tracking-tighter leading-none uppercase text-white"
+          >
+            SP
+          </span>
+        </motion.div>
+
+        {/* ACIO Group — Slides in from Right, Static White */}
         <motion.span
-          className="font-display text-[clamp(85px,21vw,300px)] font-bold tracking-tighter text-white leading-none uppercase"
-          initial={{ x: '80%', opacity: 0 }}
-          animate={inView ? { x: 0, opacity: 1 } : { x: '80%', opacity: 0 }}
-          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+          className="font-display text-[clamp(85px,21vw,300px)] font-bold tracking-tighter leading-none uppercase text-white"
+          initial={{ x: '85%', opacity: 0, scale: 0.95 }}
+          animate={inView ? { 
+            x: 0, 
+            opacity: 1, 
+            scale: 1
+          } : { x: '85%', opacity: 0, scale: 0.95 }}
+          transition={{ 
+            duration: 2.0, 
+            ease: [0.16, 1, 0.3, 1]
+          }}
         >
           ACIO
         </motion.span>

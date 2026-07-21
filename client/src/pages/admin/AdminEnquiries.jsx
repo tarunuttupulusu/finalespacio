@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Search, Filter, Eye, CheckCircle, Clock, XCircle, AlertCircle, Mail, Building2, DollarSign, Phone, MapPin } from 'lucide-react';
+import { Search, Filter, Eye, CheckCircle, Clock, XCircle, AlertCircle, Mail, Building2, DollarSign, Phone, MapPin, Download } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
 
 const statusConfig = {
   new: { label: 'New', color: 'text-gold', bg: 'bg-gold/15', icon: AlertCircle },
@@ -27,6 +28,24 @@ const AdminEnquiries = () => {
   useEffect(() => {
     const fetchLeads = async () => {
       try {
+        if (supabase && supabase.from) {
+          const { data, error } = await supabase.from('leads').select('*').order('created_at', { ascending: false });
+          if (!error && data && data.length > 0) {
+            setLeads(data.map(item => ({
+              _id: item.id,
+              name: item.name,
+              email: item.email,
+              phone: item.mobile,
+              projectType: item.project_type,
+              budget: item.budget,
+              status: item.status || 'new',
+              createdAt: item.created_at,
+              message: item.message
+            })));
+            setLoading(false);
+            return;
+          }
+        }
         const res = await axios.get('/leads');
         if (res.data.success) {
           setLeads(res.data.data.leads || res.data.data || []);
@@ -44,6 +63,9 @@ const AdminEnquiries = () => {
 
   const updateStatus = async (id, status) => {
     try {
+      if (supabase && supabase.from) {
+        await supabase.from('leads').update({ status }).eq('id', id);
+      }
       await axios.patch(`/leads/${id}/status`, { status });
       setLeads((prev) => prev.map((l) => l._id === id ? { ...l, status } : l));
       if (selectedLead?._id === id) setSelectedLead((prev) => ({ ...prev, status }));
@@ -61,11 +83,46 @@ const AdminEnquiries = () => {
 
   const formatDate = (d) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
+  const exportToExcel = () => {
+    const dataToExport = filtered.length > 0 ? filtered : leads;
+    const headers = ['Name', 'Email', 'Phone', 'Project Type', 'Budget', 'Location', 'Status', 'Date', 'Message'];
+    
+    const rows = dataToExport.map(l => [
+      `"${(l.name || '').replace(/"/g, '""')}"`,
+      `"${(l.email || '').replace(/"/g, '""')}"`,
+      `"${(l.phone || '').replace(/"/g, '""')}"`,
+      `"${(l.serviceType || l.projectType || 'interior_design').replace(/_/g, ' ')}"`,
+      `"${(l.projectDetails?.budget || l.budget || 'N/A').replace(/"/g, '""')}"`,
+      `"${(l.propertyDetails?.location || l.location || 'N/A').replace(/"/g, '""')}"`,
+      `"${(l.status || 'new')}"`,
+      `"${new Date(l.createdAt).toLocaleDateString('en-IN')}"`,
+      `"${(l.projectDetails?.notes || l.message || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `Espacio_Enquiries_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <h1 className="font-editorial text-3xl font-bold text-white">Enquiries</h1>
-        <p className="font-sans text-xs text-white/40 uppercase tracking-widest">Client consultation requests</p>
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h1 className="font-editorial text-3xl font-bold text-white">Enquiries</h1>
+          <p className="font-sans text-xs text-white/40 uppercase tracking-widest">Client consultation requests</p>
+        </div>
+        <button
+          onClick={exportToExcel}
+          className="flex items-center space-x-2 bg-gold hover:bg-gold-hover text-charcoal font-sans text-xs font-bold px-4 py-2.5 rounded-lg transition-all shadow-md"
+        >
+          <Download size={14} />
+          <span>Export to Excel (.csv)</span>
+        </button>
       </div>
 
       {/* Filters */}

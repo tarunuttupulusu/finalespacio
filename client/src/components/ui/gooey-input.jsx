@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 
 export const GooeyInput = ({
@@ -13,7 +13,7 @@ export const GooeyInput = ({
   const [hovered, setHovered] = useState(false);
   const inputRef = useRef(null);
 
-  const handleContainerClick = (e) => {
+  const handleContainerClick = () => {
     // When expanding, focus the input field
     inputRef.current?.focus();
   };
