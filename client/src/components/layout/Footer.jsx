@@ -211,7 +211,7 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* 4. Massive Animated ESPACIO Typography ([E] S P A from Left, C I O from Right) */}
+      {/* 4. Massive Animated ESPACIO. Typography ([E] S P A from Left, C I O . from Right) */}
       <div ref={espRef} className="w-full select-none overflow-hidden flex items-center justify-center my-8 py-4 px-2">
         <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 max-w-[95vw] overflow-visible">
           {/* LEFT GROUP: [E] Emblem + S + P + A (Animates FROM LEFT) */}
@@ -222,19 +222,19 @@ const Footer = () => {
             transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           >
             {/* Bigger Logo Emblem Box [E] */}
-            <div className="shrink-0 relative scale-100 sm:scale-115 md:scale-135 translate-y-1">
-              <LogoEmblem scrolled={false} size={125} />
+            <div className="shrink-0 relative scale-110 sm:scale-130 md:scale-150 translate-y-1 mr-1 sm:mr-2">
+              <LogoEmblem scrolled={false} size={110} />
             </div>
 
-            {/* S P A Letters (Montserrat Bold, matching size format) */}
+            {/* S P A Letters (Montserrat, professional matching size) */}
             <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
               {['S', 'P', 'A'].map((letter) => (
                 <span
                   key={letter}
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
-                    fontSize: 'clamp(46px, 8.5vw, 135px)',
-                    fontWeight: 600,
+                    fontSize: 'clamp(48px, 9vw, 140px)',
+                    fontWeight: 400,
                     color: '#ffffff',
                     letterSpacing: '0.04em',
                     lineHeight: 1,
@@ -246,7 +246,7 @@ const Footer = () => {
             </div>
           </motion.div>
 
-          {/* RIGHT GROUP: C + I + O + . (Animates FROM RIGHT together) */}
+          {/* RIGHT GROUP: C + I + O + . (Animates FROM RIGHT) */}
           <motion.div
             className="flex items-center gap-1 sm:gap-2 md:gap-3"
             initial={{ x: '80%', opacity: 0 }}
@@ -258,10 +258,10 @@ const Footer = () => {
                 key={i}
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
-                  fontSize: letter === '.' ? 'clamp(52px, 9.5vw, 145px)' : 'clamp(46px, 8.5vw, 135px)',
-                  fontWeight: 600,
-                  color: letter === '.' ? '#d4aa7d' : '#ffffff',
-                  letterSpacing: '0.04em',
+                  fontSize: 'clamp(48px, 9vw, 140px)',
+                  fontWeight: letter === '.' ? 700 : 400,
+                  color: '#ffffff',
+                  letterSpacing: letter === '.' ? '0' : '0.04em',
                   lineHeight: 1,
                 }}
               >

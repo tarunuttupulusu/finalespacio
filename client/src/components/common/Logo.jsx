@@ -101,17 +101,17 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
       <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 overflow-visible py-4 px-2">
         {/* LEFT GROUP: [E] Emblem + S + P + A (Animates FROM LEFT) */}
         <motion.div
-          initial={{ x: -240, opacity: 0 }}
+          initial={{ x: -250, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
           className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3.5"
         >
           {/* Bigger Logo Emblem Box [E] */}
-          <div className="shrink-0 relative scale-100 sm:scale-115 md:scale-130 translate-y-0.5">
-            <LogoEmblem scrolled={scrolled} size={125} />
+          <div className="shrink-0 relative scale-110 sm:scale-125 md:scale-140 translate-y-0.5 mr-1 sm:mr-2">
+            <LogoEmblem scrolled={scrolled} size={110} />
           </div>
 
-          {/* S P A Letters (Montserrat Bold, matching size format) */}
+          {/* S P A Letters (Montserrat, professional matching size) */}
           <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
             {['S', 'P', 'A'].map((letter, i) => (
               <motion.span
@@ -122,7 +122,7 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
                   fontSize: 'clamp(46px, 8vw, 92px)',
-                  fontWeight: 600,
+                  fontWeight: 400,
                   color: ink,
                   letterSpacing: '0.04em',
                   lineHeight: 1,
@@ -134,9 +134,9 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
           </div>
         </motion.div>
 
-        {/* RIGHT GROUP: C + I + O + . (Animates FROM RIGHT together) */}
+        {/* RIGHT GROUP: C + I + O + . (Animates FROM RIGHT) */}
         <motion.div
-          initial={{ x: 240, opacity: 0 }}
+          initial={{ x: 250, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
           className="flex items-center gap-1 sm:gap-2 md:gap-3"
@@ -149,10 +149,10 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
               transition={{ duration: 0.6, delay: 0.9 + i * 0.08, ease: 'easeOut' }}
               style={{
                 fontFamily: "'Montserrat', sans-serif",
-                fontSize: letter === '.' ? 'clamp(52px, 9vw, 100px)' : 'clamp(46px, 8vw, 92px)',
-                fontWeight: 600,
-                color: letter === '.' ? gold : ink,
-                letterSpacing: '0.04em',
+                fontSize: 'clamp(46px, 8vw, 92px)',
+                fontWeight: letter === '.' ? 700 : 400,
+                color: ink,
+                letterSpacing: letter === '.' ? '0' : '0.04em',
                 lineHeight: 1,
               }}
             >
