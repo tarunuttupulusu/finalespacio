@@ -211,32 +211,32 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* 4. Massive Animated ESPACIO. Typography ([E] S P A from Left, C I O . from Right) */}
+      {/* 4. Massive Animated ESPACIO Typography ([E] S P A from Left, C I O . from Right) */}
       <div ref={espRef} className="w-full select-none overflow-hidden flex items-center justify-center my-8 py-4 px-2">
         <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 max-w-[95vw] overflow-visible">
           {/* LEFT GROUP: [E] Emblem + S + P + A (Animates FROM LEFT) */}
           <motion.div
-            className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3.5"
+            className="flex items-center gap-1.5 sm:gap-2 md:gap-3"
             initial={{ x: '-80%', opacity: 0 }}
             animate={inView ? { x: 0, opacity: 1 } : { x: '-80%', opacity: 0 }}
             transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* Bigger Logo Emblem Box [E] */}
-            <div className="shrink-0 relative scale-110 sm:scale-130 md:scale-150 translate-y-1 mr-1 sm:mr-2">
-              <LogoEmblem scrolled={false} size={110} />
+            {/* Bigger Logo Emblem Box [E] scaled 1:1 to match letter cap height */}
+            <div className="shrink-0 relative flex items-center justify-center">
+              <LogoEmblem scrolled={false} size={130} tightViewBox={true} />
             </div>
 
-            {/* S P A Letters (Montserrat, professional matching size) */}
+            {/* S P A Letters (Montserrat, matching size format) */}
             <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
               {['S', 'P', 'A'].map((letter) => (
                 <span
                   key={letter}
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
-                    fontSize: 'clamp(48px, 9vw, 140px)',
-                    fontWeight: 400,
+                    fontSize: 'clamp(44px, 8.5vw, 130px)',
+                    fontWeight: 300,
                     color: '#ffffff',
-                    letterSpacing: '0.04em',
+                    letterSpacing: '0.06em',
                     lineHeight: 1,
                   }}
                 >
@@ -248,26 +248,43 @@ const Footer = () => {
 
           {/* RIGHT GROUP: C + I + O + . (Animates FROM RIGHT) */}
           <motion.div
-            className="flex items-center gap-1 sm:gap-2 md:gap-3"
+            className="flex items-end gap-1 sm:gap-2 md:gap-3"
             initial={{ x: '80%', opacity: 0 }}
             animate={inView ? { x: 0, opacity: 1 } : { x: '80%', opacity: 0 }}
             transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            {['C', 'I', 'O', '.'].map((letter, i) => (
-              <span
-                key={i}
-                style={{
-                  fontFamily: "'Montserrat', sans-serif",
-                  fontSize: 'clamp(48px, 9vw, 140px)',
-                  fontWeight: letter === '.' ? 700 : 400,
-                  color: '#ffffff',
-                  letterSpacing: letter === '.' ? '0' : '0.04em',
-                  lineHeight: 1,
-                }}
-              >
-                {letter}
-              </span>
-            ))}
+            <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+              {['C', 'I', 'O'].map((letter) => (
+                <span
+                  key={letter}
+                  style={{
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: 'clamp(44px, 8.5vw, 130px)',
+                    fontWeight: 300,
+                    color: '#ffffff',
+                    letterSpacing: '0.06em',
+                    lineHeight: 1,
+                  }}
+                >
+                  {letter}
+                </span>
+              ))}
+            </div>
+
+            {/* Small full stop dot '.' coming with CIO */}
+            <span
+              style={{
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: 'clamp(28px, 5.5vw, 80px)',
+                fontWeight: 400,
+                color: '#A98A54',
+                lineHeight: 1,
+                marginBottom: '0.08em',
+                marginLeft: '-0.15em'
+              }}
+            >
+              .
+            </span>
           </motion.div>
         </div>
       </div>
