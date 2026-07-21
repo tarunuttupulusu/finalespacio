@@ -270,4 +270,5 @@ const Logo = ({ className = '', showText = true, scrolled = false, size = 'small
   );
 };
 
+export { LogoEmblem };
 export default Logo;

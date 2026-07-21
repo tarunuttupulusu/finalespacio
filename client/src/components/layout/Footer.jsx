@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { SocialLightButton } from '../ui/SocialLightButton';
+import { LogoEmblem } from '../common/Logo';
 
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -210,111 +211,65 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* 4. Massive Animated ESPACIO Typography (ESP comes from Left, ACIO comes from Right) */}
-      <div ref={espRef} className="w-full select-none overflow-hidden flex items-center justify-center mt-6 mb-2">
-        {/* ESP Group - slides in dynamically from LEFT */}
-        <motion.div
-          className="flex items-center justify-center gap-0 sm:gap-1"
-          initial={{ x: '-85%', opacity: 0, scale: 0.95 }}
-          animate={inView ? { x: 0, opacity: 1, scale: 1 } : { x: '-85%', opacity: 0, scale: 0.95 }}
-          transition={{ duration: 2.0, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {/* Logo Icon Emblem replacing 'E' with dynamic lighting */}
-          <div className="h-[clamp(62px,15.2vw,218px)] w-auto shrink-0 flex items-center justify-center -mt-1 group cursor-pointer">
-            <svg className="h-full w-auto" viewBox="28 26 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <radialGradient id="footerGlowGrad" cx="42%" cy="45%" r="40%">
-                  <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.95" />
-                  <stop offset="60%" stopColor="#f59e0b" stopOpacity="0.6" />
-                  <stop offset="100%" stopColor="#d97706" stopOpacity="0" />
-                </radialGradient>
-                <linearGradient id="lightBeamGrad" x1="44.5" y1="56" x2="44.5" y2="95" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="#fbbf24" stopOpacity="0" />
-                </linearGradient>
-                {/* Clip Path to prevent any light from appearing above the lamp shade rim (y=54) */}
-                <clipPath id="belowLampClip">
-                  <rect x="0" y="54" width="120" height="66" />
-                </clipPath>
-              </defs>
-              
-              {/* Architectural Frame */}
-              <motion.path
-                d="M32 55 V95 H95 V30 H50"
-                stroke="#ffffff" strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round"
-                initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : { pathLength: 0 }}
-                transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
-              />
-              {/* T-bar */}
-              <motion.path
-                d="M32 30 H57"
-                stroke="#ffffff" strokeWidth="5.5" strokeLinecap="round"
-                initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : { pathLength: 0 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-              />
-              {/* Lamp Fixture — Fixed (No longer rotates) */}
-              <g
-                style={{ transformOrigin: '44.5px 30px' }}
-              >
-                {/* Flickering Light Layers (strictly clipped BELOW the lamp shade base rim) */}
-                <motion.g
-                  clipPath="url(#belowLampClip)"
-                  initial={{ opacity: 0 }}
-                  animate={inView ? { opacity: [1, 0, 1, 0, 1, 0.08, 1, 0, 1] } : { opacity: 0 }}
-                  transition={{ duration: 1.8, repeat: Infinity, ease: "linear" }}
-                >
-                  {/* Downward Light Beam Cone */}
-                  <polygon points="39,56 50,56 92,95 18,95" fill="url(#lightBeamGrad)" />
-                  
-                  {/* Outer Bulb Glow Halo */}
-                  <circle cx="44.5" cy="56" r="22" fill="url(#footerGlowGrad)" />
-                  
-                  {/* Bright Inner Bulb Dot */}
-                  <circle cx="44.5" cy="56" r="4.5" fill="#ffffff" />
-                  
-                  {/* Lamp Filament Line */}
-                  <line x1="39" y1="56" x2="50" y2="56" stroke="#fbbf24" strokeWidth="4" strokeLinecap="round" />
-                </motion.g>
-
-                {/* Lamp Fixture Body */}
-                <path d="M44.5 30 V44" stroke="#ffffff" strokeWidth="4.5" strokeLinecap="round" />
-                <polygon points="44.5,44 36,54 53,54" fill="#ffffff" />
-              </g>
-
-              {/* E Glyph */}
-              <g stroke="#ffffff" strokeWidth="5.5" strokeLinecap="round">
-                <line x1="70" y1="54" x2="70" y2="86" />
-                <line x1="70" y1="54" x2="88" y2="54" />
-                <line x1="70" y1="70" x2="85" y2="70" />
-                <line x1="70" y1="86" x2="88" y2="86" />
-              </g>
-            </svg>
-          </div>
-
-          {/* SP text — Static White */}
-          <span
-            className="font-display text-[clamp(85px,21vw,300px)] font-bold tracking-tighter leading-none uppercase text-white"
+      {/* 4. Massive Animated ESPACIO Typography ([E] S P A from Left, C I O from Right) */}
+      <div ref={espRef} className="w-full select-none overflow-hidden flex items-center justify-center my-8 py-4 px-2">
+        <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 max-w-[95vw] overflow-visible">
+          {/* LEFT GROUP: [E] Emblem + S + P + A (Animates FROM LEFT) */}
+          <motion.div
+            className="flex items-center gap-1.5 sm:gap-2 md:gap-3"
+            initial={{ x: '-80%', opacity: 0 }}
+            animate={inView ? { x: 0, opacity: 1 } : { x: '-80%', opacity: 0 }}
+            transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            SP
-          </span>
-        </motion.div>
+            {/* Bigger Logo Emblem Box [E] */}
+            <div className="shrink-0 relative scale-90 sm:scale-105 md:scale-125 translate-y-1">
+              <LogoEmblem scrolled={false} size={110} />
+            </div>
 
-        {/* ACIO Group — Slides in from Right, Static White */}
-        <motion.span
-          className="font-display text-[clamp(85px,21vw,300px)] font-bold tracking-tighter leading-none uppercase text-white"
-          initial={{ x: '85%', opacity: 0, scale: 0.95 }}
-          animate={inView ? { 
-            x: 0, 
-            opacity: 1, 
-            scale: 1
-          } : { x: '85%', opacity: 0, scale: 0.95 }}
-          transition={{ 
-            duration: 2.0, 
-            ease: [0.16, 1, 0.3, 1]
-          }}
-        >
-          ACIO
-        </motion.span>
+            {/* S P A Letters (Montserrat, matching size format) */}
+            <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+              {['S', 'P', 'A'].map((letter) => (
+                <span
+                  key={letter}
+                  style={{
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: 'clamp(44px, 8.5vw, 130px)',
+                    fontWeight: 300,
+                    color: '#ffffff',
+                    letterSpacing: '0.06em',
+                    lineHeight: 1,
+                  }}
+                >
+                  {letter}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* RIGHT GROUP: C + I + O (Animates FROM RIGHT) */}
+          <motion.div
+            className="flex items-center gap-1 sm:gap-2 md:gap-3"
+            initial={{ x: '80%', opacity: 0 }}
+            animate={inView ? { x: 0, opacity: 1 } : { x: '80%', opacity: 0 }}
+            transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {['C', 'I', 'O'].map((letter) => (
+              <span
+                key={letter}
+                style={{
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: 'clamp(44px, 8.5vw, 130px)',
+                  fontWeight: 300,
+                  color: '#ffffff',
+                  letterSpacing: '0.06em',
+                  lineHeight: 1,
+                }}
+              >
+                {letter}
+              </span>
+            ))}
+          </motion.div>
+        </div>
       </div>
 
       {/* 5. Copyright Strip */}
