@@ -212,31 +212,31 @@ const Footer = () => {
       </div>
 
       {/* 4. Massive Animated ESPACIO Typography ([E] S P A from Left, C I O . from Right) */}
-      <div ref={espRef} className="w-full select-none overflow-hidden flex items-center justify-center my-8 py-4 px-2">
-        <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 max-w-[95vw] overflow-visible">
+      <div ref={espRef} className="w-full select-none overflow-hidden flex items-center justify-center my-6 py-4 px-1">
+        <div className="flex flex-nowrap items-end justify-center gap-1 sm:gap-2 md:gap-3 max-w-[98vw] overflow-visible w-full">
           {/* LEFT GROUP: [E] Emblem + S + P + A (Animates FROM LEFT) */}
           <motion.div
-            className="flex items-end gap-1.5 sm:gap-2 md:gap-3"
+            className="flex flex-nowrap items-end gap-1 sm:gap-1.5 md:gap-2.5"
             initial={{ x: '-80%', opacity: 0 }}
             animate={inView ? { x: 0, opacity: 1 } : { x: '-80%', opacity: 0 }}
             transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* Bigger Logo Emblem Box [E] (Bottom aligned with baseline of S P A C I O) */}
-            <div className="shrink-0 relative flex items-end justify-center -translate-y-3 sm:-translate-y-4">
-              <LogoEmblem scrolled={false} size={150} tightViewBox={true} />
+            {/* Responsive Logo Emblem Box [E] */}
+            <div className="w-[clamp(30px,7.5vw,115px)] h-[clamp(30px,7.5vw,115px)] shrink-0 relative flex items-end justify-center -translate-y-1 sm:-translate-y-2">
+              <LogoEmblem scrolled={false} size="100%" tightViewBox={true} className="w-full h-full" />
             </div>
 
             {/* S P A Letters (Montserrat, matching size format) */}
-            <div className="flex items-end gap-1 sm:gap-2 md:gap-3">
+            <div className="flex flex-nowrap items-end gap-0.5 sm:gap-1 md:gap-2">
               {['S', 'P', 'A'].map((letter) => (
                 <span
                   key={letter}
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
-                    fontSize: 'clamp(44px, 8.5vw, 130px)',
+                    fontSize: 'clamp(24px, 7vw, 92px)',
                     fontWeight: 300,
                     color: '#ffffff',
-                    letterSpacing: '0.06em',
+                    letterSpacing: '0.04em',
                     lineHeight: 1,
                   }}
                 >
@@ -248,21 +248,21 @@ const Footer = () => {
 
           {/* RIGHT GROUP: C + I + O + . (Animates FROM RIGHT) */}
           <motion.div
-            className="flex items-end gap-1 sm:gap-2 md:gap-3"
+            className="flex flex-nowrap items-end gap-0.5 sm:gap-1 md:gap-2"
             initial={{ x: '80%', opacity: 0 }}
             animate={inView ? { x: 0, opacity: 1 } : { x: '80%', opacity: 0 }}
             transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+            <div className="flex flex-nowrap items-end gap-0.5 sm:gap-1 md:gap-2">
               {['C', 'I', 'O'].map((letter) => (
                 <span
                   key={letter}
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
-                    fontSize: 'clamp(44px, 8.5vw, 130px)',
+                    fontSize: 'clamp(24px, 7vw, 92px)',
                     fontWeight: 300,
                     color: '#ffffff',
-                    letterSpacing: '0.06em',
+                    letterSpacing: '0.04em',
                     lineHeight: 1,
                   }}
                 >
@@ -271,16 +271,16 @@ const Footer = () => {
               ))}
             </div>
 
-            {/* Small full stop dot '.' coming with CIO */}
+            {/* Small white full stop dot '.' */}
             <span
               style={{
                 fontFamily: "'Montserrat', sans-serif",
-                fontSize: 'clamp(20px, 3.5vw, 52px)',
+                fontSize: 'clamp(14px, 3.5vw, 42px)',
                 fontWeight: 400,
                 color: '#ffffff',
                 lineHeight: 1,
-                marginBottom: '0.08em',
-                marginLeft: '-0.15em'
+                marginBottom: '0.06em',
+                marginLeft: '-0.1em'
               }}
             >
               .

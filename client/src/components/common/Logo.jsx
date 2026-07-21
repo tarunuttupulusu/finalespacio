@@ -11,12 +11,12 @@ const BULB   = '#FFC46B';
    EMBLEM – reusable compact icon with glowing/flickering bulb
    and inner 'E' glyph. Used in both headers and bottom menus.
    ═══════════════════════════════════════════════════════════════════ */
-const LogoEmblem = ({ scrolled, size = 52, tightViewBox = false }) => {
+const LogoEmblem = ({ scrolled, size = 52, tightViewBox = false, className = '' }) => {
   const ink = scrolled ? INK : '#ffffff';
   const viewBoxAttr = tightViewBox ? "28 26 72 72" : "0 0 120 120";
 
   return (
-    <svg width={size} height={size} viewBox={viewBoxAttr} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width={size} height={size} className={className} viewBox={viewBoxAttr} fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <radialGradient id={`glowGradEmblem-${scrolled ? 'light' : 'dark'}`} cx="42%" cy="45%" r="40%">
           <stop offset="0%"   stopColor={BULB} stopOpacity="0.85" />
@@ -97,23 +97,23 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
   const gold = scrolled ? GOLD    : '#d4aa7d';
 
   return (
-    <div className="flex flex-col items-center justify-center select-none py-6 w-full max-w-[90vw]">
-      {/* Main Wordmark Container */}
-      <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 overflow-visible py-4 px-2">
+    <div className="flex flex-col items-center justify-center select-none py-6 w-full max-w-[95vw]">
+      {/* Main Wordmark Container (Unbroken single line on mobile) */}
+      <div className="flex flex-nowrap items-end justify-center gap-1 sm:gap-2 md:gap-3 overflow-visible py-4 px-1 w-full">
         {/* LEFT GROUP: [E] Emblem + S + P + A (Animates FROM LEFT) */}
         <motion.div
           initial={{ x: -220, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="flex items-end gap-1.5 sm:gap-2 md:gap-3"
+          className="flex flex-nowrap items-end gap-1 sm:gap-1.5 md:gap-2.5"
         >
-          {/* Logo Emblem Box [E] (Aligned with bottom line of S P A C I O) */}
-          <div className="shrink-0 relative flex items-end justify-center -translate-y-2 sm:-translate-y-2.5">
-            <LogoEmblem scrolled={scrolled} size={102} tightViewBox={true} />
+          {/* Responsive Logo Emblem Box [E] */}
+          <div className="w-[clamp(28px,7vw,95px)] h-[clamp(28px,7vw,95px)] shrink-0 relative flex items-end justify-center -translate-y-1 sm:-translate-y-1.5">
+            <LogoEmblem scrolled={scrolled} size="100%" tightViewBox={true} className="w-full h-full" />
           </div>
 
-          {/* S P A Letters (Montserrat, matching size format) */}
-          <div className="flex items-end gap-1 sm:gap-2 md:gap-3">
+          {/* S P A Letters */}
+          <div className="flex flex-nowrap items-end gap-0.5 sm:gap-1 md:gap-2">
             {['S', 'P', 'A'].map((letter, i) => (
               <motion.span
                 key={letter}
@@ -122,10 +122,10 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
                 transition={{ duration: 0.6, delay: 0.6 + i * 0.08, ease: 'easeOut' }}
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
-                  fontSize: 'clamp(42px, 7.5vw, 82px)',
+                  fontSize: 'clamp(22px, 6.5vw, 76px)',
                   fontWeight: 300,
                   color: ink,
-                  letterSpacing: '0.06em',
+                  letterSpacing: '0.04em',
                   lineHeight: 1,
                 }}
               >
@@ -140,9 +140,9 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
           initial={{ x: 220, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="flex items-end gap-1 sm:gap-2 md:gap-3"
+          className="flex flex-nowrap items-end gap-0.5 sm:gap-1 md:gap-2"
         >
-          <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+          <div className="flex flex-nowrap items-end gap-0.5 sm:gap-1 md:gap-2">
             {['C', 'I', 'O'].map((letter, i) => (
               <motion.span
                 key={letter}
@@ -151,10 +151,10 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
                 transition={{ duration: 0.6, delay: 0.9 + i * 0.08, ease: 'easeOut' }}
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
-                  fontSize: 'clamp(42px, 7.5vw, 82px)',
+                  fontSize: 'clamp(22px, 6.5vw, 76px)',
                   fontWeight: 300,
                   color: ink,
-                  letterSpacing: '0.06em',
+                  letterSpacing: '0.04em',
                   lineHeight: 1,
                 }}
               >
@@ -163,19 +163,19 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
             ))}
           </div>
 
-          {/* Small full stop dot '.' coming with CIO */}
+          {/* Small white full stop dot '.' */}
           <motion.span
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 1.25, ease: 'easeOut' }}
             style={{
               fontFamily: "'Montserrat', sans-serif",
-              fontSize: 'clamp(18px, 3vw, 36px)',
+              fontSize: 'clamp(14px, 3.2vw, 32px)',
               fontWeight: 400,
               color: ink,
               lineHeight: 1,
-              marginBottom: '0.08em',
-              marginLeft: '-0.15em'
+              marginBottom: '0.06em',
+              marginLeft: '-0.1em'
             }}
           >
             .
