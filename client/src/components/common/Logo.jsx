@@ -101,17 +101,17 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
       <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 overflow-visible py-4 px-2">
         {/* LEFT GROUP: [E] Emblem + S + P + A (Animates FROM LEFT) */}
         <motion.div
-          initial={{ x: -220, opacity: 0 }}
+          initial={{ x: -240, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="flex items-center gap-1.5 sm:gap-2 md:gap-3"
+          className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3.5"
         >
           {/* Bigger Logo Emblem Box [E] */}
-          <div className="shrink-0 relative scale-90 sm:scale-100 md:scale-110 translate-y-0.5">
-            <LogoEmblem scrolled={scrolled} size={110} />
+          <div className="shrink-0 relative scale-100 sm:scale-115 md:scale-130 translate-y-0.5">
+            <LogoEmblem scrolled={scrolled} size={125} />
           </div>
 
-          {/* S P A Letters (Montserrat, matching size format) */}
+          {/* S P A Letters (Montserrat Bold, matching size format) */}
           <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
             {['S', 'P', 'A'].map((letter, i) => (
               <motion.span
@@ -121,10 +121,10 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
                 transition={{ duration: 0.6, delay: 0.6 + i * 0.08, ease: 'easeOut' }}
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
-                  fontSize: 'clamp(42px, 7.5vw, 82px)',
-                  fontWeight: 300,
+                  fontSize: 'clamp(46px, 8vw, 92px)',
+                  fontWeight: 600,
                   color: ink,
-                  letterSpacing: '0.06em',
+                  letterSpacing: '0.04em',
                   lineHeight: 1,
                 }}
               >
@@ -134,25 +134,25 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
           </div>
         </motion.div>
 
-        {/* RIGHT GROUP: C + I + O (Animates FROM RIGHT) */}
+        {/* RIGHT GROUP: C + I + O + . (Animates FROM RIGHT together) */}
         <motion.div
-          initial={{ x: 220, opacity: 0 }}
+          initial={{ x: 240, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
           className="flex items-center gap-1 sm:gap-2 md:gap-3"
         >
-          {['C', 'I', 'O'].map((letter, i) => (
+          {['C', 'I', 'O', '.'].map((letter, i) => (
             <motion.span
-              key={letter}
+              key={i}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.9 + i * 0.08, ease: 'easeOut' }}
               style={{
                 fontFamily: "'Montserrat', sans-serif",
-                fontSize: 'clamp(42px, 7.5vw, 82px)',
-                fontWeight: 300,
-                color: ink,
-                letterSpacing: '0.06em',
+                fontSize: letter === '.' ? 'clamp(52px, 9vw, 100px)' : 'clamp(46px, 8vw, 92px)',
+                fontWeight: 600,
+                color: letter === '.' ? gold : ink,
+                letterSpacing: '0.04em',
                 lineHeight: 1,
               }}
             >

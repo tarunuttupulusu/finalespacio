@@ -216,27 +216,27 @@ const Footer = () => {
         <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 max-w-[95vw] overflow-visible">
           {/* LEFT GROUP: [E] Emblem + S + P + A (Animates FROM LEFT) */}
           <motion.div
-            className="flex items-center gap-1.5 sm:gap-2 md:gap-3"
+            className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3.5"
             initial={{ x: '-80%', opacity: 0 }}
             animate={inView ? { x: 0, opacity: 1 } : { x: '-80%', opacity: 0 }}
             transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           >
             {/* Bigger Logo Emblem Box [E] */}
-            <div className="shrink-0 relative scale-90 sm:scale-105 md:scale-125 translate-y-1">
-              <LogoEmblem scrolled={false} size={110} />
+            <div className="shrink-0 relative scale-100 sm:scale-115 md:scale-135 translate-y-1">
+              <LogoEmblem scrolled={false} size={125} />
             </div>
 
-            {/* S P A Letters (Montserrat, matching size format) */}
+            {/* S P A Letters (Montserrat Bold, matching size format) */}
             <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
               {['S', 'P', 'A'].map((letter) => (
                 <span
                   key={letter}
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
-                    fontSize: 'clamp(44px, 8.5vw, 130px)',
-                    fontWeight: 300,
+                    fontSize: 'clamp(46px, 8.5vw, 135px)',
+                    fontWeight: 600,
                     color: '#ffffff',
-                    letterSpacing: '0.06em',
+                    letterSpacing: '0.04em',
                     lineHeight: 1,
                   }}
                 >
@@ -246,22 +246,22 @@ const Footer = () => {
             </div>
           </motion.div>
 
-          {/* RIGHT GROUP: C + I + O (Animates FROM RIGHT) */}
+          {/* RIGHT GROUP: C + I + O + . (Animates FROM RIGHT together) */}
           <motion.div
             className="flex items-center gap-1 sm:gap-2 md:gap-3"
             initial={{ x: '80%', opacity: 0 }}
             animate={inView ? { x: 0, opacity: 1 } : { x: '80%', opacity: 0 }}
             transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            {['C', 'I', 'O'].map((letter) => (
+            {['C', 'I', 'O', '.'].map((letter, i) => (
               <span
-                key={letter}
+                key={i}
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
-                  fontSize: 'clamp(44px, 8.5vw, 130px)',
-                  fontWeight: 300,
-                  color: '#ffffff',
-                  letterSpacing: '0.06em',
+                  fontSize: letter === '.' ? 'clamp(52px, 9.5vw, 145px)' : 'clamp(46px, 8.5vw, 135px)',
+                  fontWeight: 600,
+                  color: letter === '.' ? '#d4aa7d' : '#ffffff',
+                  letterSpacing: '0.04em',
                   lineHeight: 1,
                 }}
               >
