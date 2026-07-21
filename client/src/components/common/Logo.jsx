@@ -105,15 +105,15 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
           initial={{ x: -220, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="flex items-center gap-1.5 sm:gap-2 md:gap-3"
+          className="flex items-end gap-1.5 sm:gap-2 md:gap-3"
         >
-          {/* Bigger Logo Emblem Box [E] matched 1:1 in height with letters */}
-          <div className="shrink-0 relative flex items-center justify-center">
-            <LogoEmblem scrolled={scrolled} size={82} tightViewBox={true} />
+          {/* Logo Emblem Box [E] (Aligned with bottom line of S P A C I O) */}
+          <div className="shrink-0 relative flex items-end justify-center -translate-y-2 sm:-translate-y-2.5">
+            <LogoEmblem scrolled={scrolled} size={102} tightViewBox={true} />
           </div>
 
           {/* S P A Letters (Montserrat, matching size format) */}
-          <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+          <div className="flex items-end gap-1 sm:gap-2 md:gap-3">
             {['S', 'P', 'A'].map((letter, i) => (
               <motion.span
                 key={letter}

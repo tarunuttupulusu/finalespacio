@@ -216,18 +216,18 @@ const Footer = () => {
         <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 max-w-[95vw] overflow-visible">
           {/* LEFT GROUP: [E] Emblem + S + P + A (Animates FROM LEFT) */}
           <motion.div
-            className="flex items-center gap-1.5 sm:gap-2 md:gap-3"
+            className="flex items-end gap-1.5 sm:gap-2 md:gap-3"
             initial={{ x: '-80%', opacity: 0 }}
             animate={inView ? { x: 0, opacity: 1 } : { x: '-80%', opacity: 0 }}
             transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* Bigger Logo Emblem Box [E] scaled 1:1 to match letter cap height */}
-            <div className="shrink-0 relative flex items-center justify-center">
-              <LogoEmblem scrolled={false} size={130} tightViewBox={true} />
+            {/* Bigger Logo Emblem Box [E] (Bottom aligned with baseline of S P A C I O) */}
+            <div className="shrink-0 relative flex items-end justify-center -translate-y-3 sm:-translate-y-4">
+              <LogoEmblem scrolled={false} size={150} tightViewBox={true} />
             </div>
 
             {/* S P A Letters (Montserrat, matching size format) */}
-            <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+            <div className="flex items-end gap-1 sm:gap-2 md:gap-3">
               {['S', 'P', 'A'].map((letter) => (
                 <span
                   key={letter}
