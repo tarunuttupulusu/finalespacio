@@ -170,9 +170,9 @@ const LargeLogo = ({ scrolled = false, onComplete }) => {
             transition={{ duration: 0.6, delay: 1.25, ease: 'easeOut' }}
             style={{
               fontFamily: "'Montserrat', sans-serif",
-              fontSize: 'clamp(28px, 4.5vw, 52px)',
+              fontSize: 'clamp(18px, 3vw, 36px)',
               fontWeight: 400,
-              color: gold,
+              color: ink,
               lineHeight: 1,
               marginBottom: '0.08em',
               marginLeft: '-0.15em'

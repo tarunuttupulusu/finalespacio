@@ -275,9 +275,9 @@ const Footer = () => {
             <span
               style={{
                 fontFamily: "'Montserrat', sans-serif",
-                fontSize: 'clamp(28px, 5.5vw, 80px)',
+                fontSize: 'clamp(20px, 3.5vw, 52px)',
                 fontWeight: 400,
-                color: '#A98A54',
+                color: '#ffffff',
                 lineHeight: 1,
                 marginBottom: '0.08em',
                 marginLeft: '-0.15em'
